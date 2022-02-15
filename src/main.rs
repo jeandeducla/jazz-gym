@@ -33,9 +33,9 @@ fn main() {
 
     // Make a sine wave
     let num_points = 44100 * 2;
-    let mut a4 = SineWave::new(Notes::C4.freqency(), 8192.0, sample_rate as f32, num_points);
-    let mut c4 = SineWave::new(Notes::E4.freqency(), 8192.0, sample_rate as f32, num_points);
-    let mut e4 = SineWave::new(Notes::G4.freqency(), 8192.0, sample_rate as f32, num_points);
+    let mut a4 = SineWave::new(Notes::C4.freqency(), sample_rate as f32, num_points);
+    let mut c4 = SineWave::new(Notes::E4.freqency(), sample_rate as f32, num_points);
+    let mut e4 = SineWave::new(Notes::G4.freqency(), sample_rate as f32, num_points);
 
     let mut coucou: Vec<i16> = Vec::new();
 
