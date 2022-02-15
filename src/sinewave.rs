@@ -21,6 +21,10 @@ impl SineWave {
     pub fn num_points(&self) -> usize {
         self.num_points
     }
+
+    fn value(&self, t: usize) -> f32 {
+        (t as f32 * 2.0 * ::std::f32::consts::PI * self.freq / self.sample_rate).sin() * AMPLITUDE
+    }
 }
 
 impl Iterator for SineWave {
@@ -30,10 +34,8 @@ impl Iterator for SineWave {
         if self.current_point >= self.num_points {
             return None;
         }
-        let value =
-            self.current_point as f32 * 2.0 * ::std::f32::consts::PI * self.freq / self.sample_rate;
-        let value = (value.sin() * AMPLITUDE) as i16;
+        let value = self.value(self.current_point);
         self.current_point += 1;
-        Some(value)
+        Some(value as i16)
     }
 }
