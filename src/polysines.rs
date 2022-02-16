@@ -7,6 +7,7 @@ where
     S1::Item: Add<S2::Item> + Add<S1::Item>,
     S2: Source,
     S2::Item: Add<S2::Item> + Add<S1::Item>,
+    <S1::Item as Add<S2::Item>>::Output: Add,
 {
     input1: S1,
     input2: S2,
@@ -18,6 +19,7 @@ where
     S1::Item: Add<S2::Item> + Add<S1::Item>,
     S2: Source,
     S2::Item: Add<S2::Item> + Add<S1::Item>,
+    <S1::Item as Add<S2::Item>>::Output: Add,
 {
     pub fn new(input1: S1, input2: S2) -> Self {
         PolySines { input1, input2 }
@@ -30,8 +32,7 @@ where
     S1::Item: Add<S2::Item> + Add<S1::Item>,
     S2: Source,
     S2::Item: Add<S2::Item> + Add<S1::Item>,
-    // <S1::Item as Add<S2::Item>>::Output: Add,
-    <PolySines<S1, S2> as Iterator>::Item: Add<<PolySines<S1, S2> as Iterator>::Item>,
+    <S1::Item as Add<S2::Item>>::Output: Add,
 {
 }
 
@@ -41,6 +42,7 @@ where
     S1::Item: Add<S2::Item> + Add<S1::Item>,
     S2: Source,
     S2::Item: Add<S2::Item> + Add<S1::Item>,
+    <S1::Item as Add<S2::Item>>::Output: Add,
 {
     type Item = <S1::Item as Add<S2::Item>>::Output;
 
