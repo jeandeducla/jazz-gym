@@ -1,6 +1,6 @@
 use crate::source::Source;
 
-const AMPLITUDE: f32 = 8192.0;
+const AMPLITUDE: f32 = 500.0;
 
 #[derive(Debug)]
 pub struct SineWave {
