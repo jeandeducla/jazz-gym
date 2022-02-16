@@ -4,8 +4,8 @@ const AMPLITUDE: f32 = 8192.0;
 pub struct SineWave {
     freq: f32,
     sample_rate: f32,
-    num_points: usize,
-    current_point: usize,
+    target_num_samples: usize,
+    num_samples: usize,
 }
 
 impl SineWave {
@@ -13,8 +13,8 @@ impl SineWave {
         SineWave {
             freq,
             sample_rate,
-            num_points,
-            current_point: 0,
+            target_num_samples: num_points,
+            num_samples: 0,
         }
     }
 
@@ -31,11 +31,11 @@ impl Iterator for SineWave {
     type Item = i16;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.current_point >= self.num_points {
+        if self.num_samples >= self.target_num_samples {
             return None;
         }
-        let value = self.value(self.current_point);
-        self.current_point += 1;
+        let value = self.value(self.num_samples);
+        self.num_samples += 1;
         Some(value as i16)
     }
 }
