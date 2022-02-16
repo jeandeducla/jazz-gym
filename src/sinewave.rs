@@ -1,3 +1,5 @@
+use crate::source::Source;
+
 const AMPLITUDE: f32 = 8192.0;
 
 #[derive(Debug)]
@@ -18,12 +20,14 @@ impl SineWave {
         }
     }
 
-    pub fn num_points(&self) -> usize {
-        self.num_points
-    }
-
     fn value(&self, t: usize) -> f32 {
         (t as f32 * 2.0 * ::std::f32::consts::PI * self.freq / self.sample_rate).sin() * AMPLITUDE
+    }
+}
+
+impl Source for SineWave {
+    fn num_samples(&self) -> usize {
+        self.num_samples
     }
 }
 
