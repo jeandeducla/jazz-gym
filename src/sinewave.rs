@@ -25,11 +25,7 @@ impl SineWave {
     }
 }
 
-impl Source for SineWave {
-    fn num_samples(&self) -> usize {
-        self.num_samples
-    }
-}
+impl Source for SineWave {}
 
 impl Iterator for SineWave {
     type Item = i16;

@@ -33,9 +33,6 @@ where
     // <S1::Item as Add<S2::Item>>::Output: Add,
     <PolySines<S1, S2> as Iterator>::Item: Add<<PolySines<S1, S2> as Iterator>::Item>,
 {
-    fn num_samples(&self) -> usize {
-        0
-    }
 }
 
 impl<S1, S2> Iterator for PolySines<S1, S2>
