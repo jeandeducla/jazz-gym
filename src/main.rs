@@ -1,13 +1,13 @@
 use alsa::pcm::{Access, Format, HwParams, State, PCM};
 use alsa::{Direction, ValueOr};
 
-use std::thread;
-use std::time::Duration;
-
 mod notes;
+mod polysines;
 mod sinewave;
+mod source;
 
 use notes::Notes;
+use polysines::PolySines;
 use sinewave::SineWave;
 
 fn main() {
@@ -33,23 +33,22 @@ fn main() {
 
     // Make a sine wave
     let num_points = 44100 * 2;
-    let mut a4 = SineWave::new(Notes::C4.freqency(), sample_rate as f32, num_points);
-    let mut c4 = SineWave::new(Notes::E4.freqency(), sample_rate as f32, num_points);
-    let mut e4 = SineWave::new(Notes::G4.freqency(), sample_rate as f32, num_points);
+    let c4 = SineWave::new(Notes::C4.freqency(), sample_rate as f32, num_points);
+    let e4 = SineWave::new(Notes::E4.freqency(), sample_rate as f32, num_points);
+    let third = PolySines::new(c4, e4);
 
-    let mut coucou: Vec<i16> = Vec::new();
+    let g4 = SineWave::new(Notes::G4.freqency(), sample_rate as f32, num_points);
+    let b4 = SineWave::new(Notes::B4.freqency(), sample_rate as f32, num_points);
+    let top = PolySines::new(g4, b4);
 
-    loop {
-        match (a4.next(), c4.next(), e4.next()) {
-            (Some(a), Some(c), Some(e)) => coucou.push(a + c + e),
-            _ => break,
-        }
-    }
+    let poly = PolySines::new(third, top);
+    let a4 = SineWave::new(Notes::A4.freqency(), sample_rate as f32, num_points);
+    let poly = PolySines::new(poly, a4);
 
     // TODO: should return the current_point
-    let n = a4.num_points();
-    // assert_eq!(io.writei(a4.collect::<Vec<i16>>().as_ref()).unwrap(), n);
-    assert_eq!(io.writei(&coucou).unwrap(), n);
+    // let n = a4.num_points();
+    assert_eq!(io.writei(poly.collect::<Vec<i16>>().as_ref()).unwrap(), 2);
+    // assert_eq!(io.writei(&coucou).unwrap(), n);
 
     // In case the buffer was larger than 2 seconds, start the stream manually.
     println!("{:?}", pcm.state());
@@ -60,7 +59,4 @@ fn main() {
     // Wait for the stream to finish playback.
 
     pcm.drain().unwrap();
-    // thread::sleep_ms(2000);
-    println!("coucou");
-    assert_eq!(io.writei(&coucou).unwrap(), n);
 }
