@@ -15,11 +15,6 @@ use game::{Command, Game};
 use crate::notes::Interval;
 
 fn main() {
-    // let num_points = 44100 * 2;
-    // let e4 = SineWave::new(Note::C4.freqency(), sample_rate as f32, num_points);
-    // let c4 = SineWave::new(Note::F4.freqency(), sample_rate as f32, num_points);
-    // let poly = PolySines::new(c4, e4);
-
     let mut game: Option<Game> = None;
 
     let mut rl = Editor::<()>::new();
@@ -34,9 +29,9 @@ fn main() {
                 Some(game) => {
                     match Interval::from_str(&line) {
                         Ok(interval) => {
-                            game.challenges[0].answer(interval);
+                            game.challenges[challenge_num].answer(interval);
                             println!("Your answer was...");
-                            match game.challenges[0].verify_user_answer() {
+                            match game.challenges[challenge_num].verify_user_answer() {
                                 true => {
                                     println!("     > Correct!");
                                 }
@@ -44,12 +39,11 @@ fn main() {
                                     println!("     x Uncorrect...");
                                     println!(
                                         "The correct answer was {:?}",
-                                        game.challenges[0].correct_answer
+                                        game.challenges[challenge_num].correct_answer
                                     );
                                 }
                             }
                             challenge_num += 1;
-                            // TODO: play next challenge
                             println!("Ok ! Let's go. Challenge number {}. Listen...", challenge_num);
                             game.challenges[challenge_num].play_correct_answer();
                             println!("What interval is it?");
