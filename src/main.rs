@@ -24,30 +24,7 @@ fn main() {
 
     let mut rl = Editor::<()>::new();
 
-    println!("  OooOoo                         .oOOOo.                 ");
-    println!("      O                         .O     o                 ");
-    println!("      o                         o                        ");
-    println!("      O                         O                        ");
-    println!("      o  .oOoO' ooOO ooOO       O   .oOOo O   o `oOOoOO. ");
-    println!("      O  O   o    o    o        o.      O o   O  O  o  o ");
-    println!("O     o  o   O   O    O          O.    oO O   o  o  O  O ");
-    println!("`OooOO'  `OoO'o OooO OooO         `OooO'  `OoOO  O  o  o ");
-    println!("                                              o          ");
-    println!("                                           OoO'          ");
-    println!("");
-    println!("");
-    println!("Jazz Gym is a terminal game to train your ear to recognize");
-    println!("two-note intervals.");
-    println!("You will hear a two-note interval and your goal is to ");
-    println!("recognize it by typing one of the following:");
-    println!(" - '2': for a second");
-    println!(" - '3': for a third");
-    println!(" - '4': for a fourth");
-    println!(" - '5': for a fifth");
-    println!(" - '6': for a sixth");
-    println!(" - '7': for a seventh");
-    println!("Do you want to start a new game? (type: 'start' to start");
-    println!("and 'quit' to quit the game)");
+    game::print_rules();
 
     let mut challenge_num = 0;
     loop {
