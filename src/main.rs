@@ -32,33 +32,29 @@ fn main() {
         match readline {
             Ok(line) => match game.as_mut() {
                 Some(game) => {
-                    if let Ok(Command::Replay) = Command::from_str(&line) {
-                        // game.as_ref().unwrap().challenges[0].play_correct_answer();
-                    } else {
-                        match Interval::from_str(&line) {
-                            Ok(interval) => {
-                                game.challenges[0].answer(interval);
-                                println!("Your answer was...");
-                                match game.challenges[0].verify_user_answer() {
-                                    true => {
-                                        println!("     > Correct!");
-                                    }
-                                    false => {
-                                        println!("     x Uncorrect...");
-                                        println!(
-                                            "The correct answer was {:?}",
-                                            game.challenges[0].correct_answer
-                                        );
-                                    }
+                    match Interval::from_str(&line) {
+                        Ok(interval) => {
+                            game.challenges[0].answer(interval);
+                            println!("Your answer was...");
+                            match game.challenges[0].verify_user_answer() {
+                                true => {
+                                    println!("     > Correct!");
                                 }
-                                challenge_num += 1;
-                                // TODO: play next challenge
-                                println!("Ok ! Let's go. Challenge number {}. Listen...", challenge_num);
-                                game.challenges[challenge_num].play_correct_answer();
-                                println!("What interval is it?");
+                                false => {
+                                    println!("     x Uncorrect...");
+                                    println!(
+                                        "The correct answer was {:?}",
+                                        game.challenges[0].correct_answer
+                                    );
+                                }
                             }
-                            Err(_) => println!("Invalid answer! (valid answers are : P1, m2, M2, m3 , M3, P4, P5, d5, m6, M6, m7, M7, P8")
+                            challenge_num += 1;
+                            // TODO: play next challenge
+                            println!("Ok ! Let's go. Challenge number {}. Listen...", challenge_num);
+                            game.challenges[challenge_num].play_correct_answer();
+                            println!("What interval is it?");
                         }
+                        Err(_) => println!("Invalid answer! (valid answers are : P1, m2, M2, m3 , M3, P4, P5, d5, m6, M6, m7, M7, P8")
                     }
                 }
                 None => match Command::from_str(&line) {
@@ -72,10 +68,6 @@ fn main() {
                         Command::Quit => {
                             println!("See You !");
                             break;
-                        }
-                        _ => {
-                            println!("Wrong command! (type: 'start' to start and 'quit' to");
-                            println!("quit the game)");
                         }
                     },
                     Err(_) => {

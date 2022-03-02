@@ -71,7 +71,6 @@ impl Challenge {
 pub enum Command {
     Start,
     Quit,
-    Replay,
 }
 
 impl FromStr for Command {
@@ -81,7 +80,6 @@ impl FromStr for Command {
         match s {
             "start" => Ok(Command::Start),
             "quit" => Ok(Command::Quit),
-            "r" => Ok(Command::Replay),
             _ => Err(()),
         }
     }
