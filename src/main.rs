@@ -29,24 +29,31 @@ fn main() {
                 Some(game) => {
                     match Interval::from_str(&line) {
                         Ok(interval) => {
-                            game.challenges[challenge_num].answer(interval);
-                            println!("Your answer was...");
-                            match game.challenges[challenge_num].verify_user_answer() {
-                                true => {
-                                    println!("     > Correct!");
-                                }
-                                false => {
-                                    println!("     x Uncorrect...");
-                                    println!(
-                                        "The correct answer was {:?}",
-                                        game.challenges[challenge_num].correct_answer
-                                    );
+                            if let Some(challenge) = game.challenges.get_mut(challenge_num) {
+                                challenge.answer(interval);
+                                println!("Your answer was...");
+                                match challenge.verify_user_answer() {
+                                    true => {
+                                        println!("     > Correct!");
+                                    }
+                                    false => {
+                                        println!("     x Uncorrect...");
+                                        println!(
+                                            "The correct answer was {:?}",
+                                            challenge.correct_answer
+                                        );
+                                    }
                                 }
                             }
                             challenge_num += 1;
-                            println!("Ok ! Let's go. Challenge number {}. Listen...", challenge_num);
-                            game.challenges[challenge_num].play_correct_answer();
-                            println!("What interval is it?");
+                            if let Some(challenge) = game.challenges.get(challenge_num) {
+                                println!("Challenge number {}. Listen...", challenge_num + 1);
+                                challenge.play_correct_answer();
+                                println!("What interval is it?");
+                            } else {
+                                println!("Game is over!");
+                            }
+
                         }
                         Err(_) => println!("Invalid answer! (valid answers are : P1, m2, M2, m3 , M3, P4, P5, d5, m6, M6, m7, M7, P8")
                     }
@@ -54,8 +61,9 @@ fn main() {
                 None => match Command::from_str(&line) {
                     Ok(cmd) => match cmd {
                         Command::Start => {
+                            println!("Ok ! Let's go");
                             game = Some(Game::new());
-                            println!("Ok ! Let's go. First challenge. Listen...");
+                            println!("Challenge number {}. Listen...", challenge_num + 1);
                             game.as_ref().unwrap().challenges[challenge_num].play_correct_answer();
                             println!("What interval is it?");
                         }

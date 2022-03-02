@@ -16,7 +16,7 @@ pub struct Game {
 impl Game {
     pub fn new() -> Self {
         Game {
-            challenges: (1..10).map(|_| Challenge::new()).collect(),
+            challenges: (0..3).map(|_| Challenge::new()).collect(),
         }
     }
 }
