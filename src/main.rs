@@ -15,7 +15,7 @@ use game::{Command, Game};
 use crate::notes::Interval;
 
 fn main() {
-    let mut game: Option<Game> = None;
+    let mut session: Option<Game> = None;
 
     let mut rl = Editor::<()>::new();
 
@@ -25,7 +25,7 @@ fn main() {
     loop {
         let readline = rl.readline(">> ");
         match readline {
-            Ok(line) => match game.as_mut() {
+            Ok(line) => match session.as_mut() {
                 Some(game) => {
                     match Interval::from_str(&line) {
                         Ok(interval) => {
@@ -52,6 +52,8 @@ fn main() {
                                 println!("What interval is it?");
                             } else {
                                 println!("Game is over!");
+                                session = None;
+                                challenge_num = 0;
                             }
 
                         }
@@ -62,9 +64,9 @@ fn main() {
                     Ok(cmd) => match cmd {
                         Command::Start => {
                             println!("Ok ! Let's go");
-                            game = Some(Game::new());
+                            session = Some(Game::new());
                             println!("Challenge number {}. Listen...", challenge_num + 1);
-                            game.as_ref().unwrap().challenges[challenge_num].play_correct_answer();
+                            session.as_ref().unwrap().challenges[challenge_num].play_correct_answer();
                             println!("What interval is it?");
                         }
                         Command::Quit => {
