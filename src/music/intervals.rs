@@ -1,3 +1,4 @@
+use std::fmt::{self, Display};
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -98,5 +99,26 @@ impl From<u8> for Interval {
             12 => Interval::PerfectOctave,
             _ => Interval::PerfectOctave,
         }
+    }
+}
+
+impl Display for Interval {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Interval::PerfectUnission => "PerfectUnission (P1)",
+            Interval::MinorSecond => "Minor Second (m2)",
+            Interval::MajorSecond => "Major Second (M2)",
+            Interval::MinorThird => "Minor Third (m3)",
+            Interval::MajorThird => "Major Third (M3)",
+            Interval::PerfectFourth => "Perfect Fourth (P4)",
+            Interval::DiminishedFifth => "Diminished Fifth (d5)",
+            Interval::PerfectFifth => "Perfect Fifth (P5)",
+            Interval::MinorSixth => "Minor Sixth (m6)",
+            Interval::MajorSixth => "Major Sixth (M6)",
+            Interval::MinorSeventh => "Minor Seventh (m7)",
+            Interval::MajorSeventh => "Major Seventh (M7)",
+            Interval::PerfectOctave => "Perfect Octave (P8)",
+        };
+        write!(f, "{}", s)
     }
 }

@@ -37,7 +37,7 @@ fn main() {
                                     false => {
                                         println!("     x Uncorrect...");
                                         println!(
-                                            "The correct answer was {:?}",
+                                            "The correct answer was {}",
                                             challenge.correct_answer
                                         );
                                     }
