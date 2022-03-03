@@ -1,4 +1,4 @@
-use crate::source::Source;
+use super::source::Source;
 use std::ops::Add;
 
 pub struct PolySines<S1, S2>

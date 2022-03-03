@@ -6,8 +6,6 @@ use rustyline::Editor;
 mod game;
 mod music;
 mod player;
-mod polysines;
-mod sinewave;
 mod source;
 
 use crate::game::{Command, Game};

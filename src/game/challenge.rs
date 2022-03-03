@@ -1,8 +1,8 @@
 use crate::{
     music::{intervals::Interval, notes::Note},
     player::Player,
-    polysines::PolySines,
-    sinewave::SineWave,
+    source::PolySines,
+    source::SineWave,
 };
 use rand::Rng;
 
