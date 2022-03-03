@@ -6,6 +6,7 @@ use crate::{
 };
 
 use rand::Rng;
+use std::fmt::{self, Display};
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -13,10 +14,42 @@ pub struct Game {
     pub challenges: Vec<Challenge>,
 }
 
+#[derive(Debug)]
+pub struct Score {
+    correct_answers: usize,
+    total_answers: usize,
+}
+
+impl Display for Score {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} / {}", self.correct_answers, self.total_answers)
+    }
+}
+
 impl Game {
     pub fn new() -> Self {
         Game {
             challenges: (0..3).map(|_| Challenge::new()).collect(),
+        }
+    }
+
+    pub fn get_current_score(&self) -> Score {
+        Score {
+            correct_answers: self
+                .challenges
+                .iter()
+                .filter(|c| c.user_answer.is_some())
+                .fold(
+                    0,
+                    |acc, c| {
+                        if c.verify_user_answer() {
+                            acc + 1
+                        } else {
+                            acc
+                        }
+                    },
+                ),
+            total_answers: self.challenges.len(),
         }
     }
 }

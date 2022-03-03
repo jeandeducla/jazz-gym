@@ -45,6 +45,7 @@ fn main() {
                                     }
                                 }
                             }
+                            println!("Your current score is: {}\n", game.get_current_score());
                             challenge_num += 1;
                             if let Some(challenge) = game.challenges.get(challenge_num) {
                                 println!("Challenge number {}. Listen...", challenge_num + 1);
@@ -52,6 +53,7 @@ fn main() {
                                 println!("What interval is it?");
                             } else {
                                 println!("Game is over!");
+                                println!("Your final score is: {}", game.get_current_score());
                                 session = None;
                                 challenge_num = 0;
                             }
@@ -66,7 +68,8 @@ fn main() {
                             println!("Ok ! Let's go");
                             session = Some(Game::new());
                             println!("Challenge number {}. Listen...", challenge_num + 1);
-                            session.as_ref().unwrap().challenges[challenge_num].play_correct_answer();
+                            session.as_ref().unwrap().challenges[challenge_num]
+                                .play_correct_answer();
                             println!("What interval is it?");
                         }
                         Command::Quit => {
