@@ -1,5 +1,9 @@
 use super::challenge::Challenge;
 use super::score::Score;
+use crate::music::intervals::Interval;
+use crate::music::notes::Note;
+
+const DEFAULT_CHALLENGE_NUM: usize = 5;
 
 #[derive(Debug)]
 pub struct Game {
@@ -7,9 +11,21 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new() -> Self {
+    pub fn new(
+        challenge_num: usize,
+        base_note: Option<Note>,
+        intervals: Option<Vec<Interval>>,
+    ) -> Self {
+        let challenge_num = if challenge_num == 0 {
+            DEFAULT_CHALLENGE_NUM
+        } else {
+            challenge_num
+        };
+
         Game {
-            challenges: (0..3).map(|_| Challenge::new()).collect(),
+            challenges: (0..challenge_num)
+                .map(|_| Challenge::new(base_note.clone(), intervals.clone()))
+                .collect(),
         }
     }
 

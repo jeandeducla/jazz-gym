@@ -1,6 +1,6 @@
 use super::intervals::Interval;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Note {
     C4,
     Db4,

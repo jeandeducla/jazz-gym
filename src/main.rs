@@ -10,6 +10,7 @@ mod source;
 
 use crate::game::{Command, Game};
 use crate::music::intervals::Interval;
+use crate::music::notes::Note;
 
 fn main() {
     let mut session: Option<Game> = None;
@@ -63,7 +64,7 @@ fn main() {
                     Ok(cmd) => match cmd {
                         Command::Start => {
                             println!("Ok ! Let's go");
-                            session = Some(Game::new());
+                            session = Some(Game::new(0, Some(Note::C4), Some(vec![])));
                             println!("Challenge number {}. Listen...", challenge_num + 1);
                             session.as_ref().unwrap().challenges[challenge_num]
                                 .play_correct_answer();

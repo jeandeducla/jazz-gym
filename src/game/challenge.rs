@@ -4,6 +4,7 @@ use crate::{
     source::PolySines,
     source::SineWave,
 };
+
 use rand::Rng;
 
 #[derive(Debug)]
@@ -14,10 +15,28 @@ pub struct Challenge {
 }
 
 impl Challenge {
-    pub fn new() -> Self {
+    // TODO: possible to have referece instead of cloning?
+    pub fn new(base_note: Option<Note>, intervals: Option<Vec<Interval>>) -> Self {
+        let base_note: Note = match base_note {
+            Some(base_note) => base_note,
+            None => rand::thread_rng().gen_range(0, 13).into(),
+        };
+
+        let correct_answer: Interval = match intervals {
+            Some(intervals) => {
+                if !intervals.is_empty() {
+                    let idx = rand::thread_rng().gen_range(0, intervals.len());
+                    intervals.get(idx).unwrap().to_owned()
+                } else {
+                    rand::thread_rng().gen_range(0, 13).into()
+                }
+            }
+            None => rand::thread_rng().gen_range(0, 13).into(),
+        };
+
         Challenge {
-            base_note: rand::thread_rng().gen_range(0, 13).into(),
-            correct_answer: rand::thread_rng().gen_range(0, 13).into(),
+            base_note,
+            correct_answer,
             user_answer: None,
         }
     }
