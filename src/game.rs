@@ -1,5 +1,5 @@
 use crate::{
-    notes::{Interval, Note},
+    music::{intervals::Interval, notes::Note},
     player::Player,
     polysines::PolySines,
     sinewave::SineWave,

@@ -4,7 +4,7 @@ use rustyline::error::ReadlineError;
 use rustyline::Editor;
 
 mod game;
-mod notes;
+mod music;
 mod player;
 mod polysines;
 mod sinewave;
@@ -12,7 +12,7 @@ mod source;
 
 use game::{Command, Game};
 
-use crate::notes::Interval;
+use crate::music::intervals::Interval;
 
 fn main() {
     let mut session: Option<Game> = None;
