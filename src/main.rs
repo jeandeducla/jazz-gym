@@ -10,8 +10,7 @@ mod polysines;
 mod sinewave;
 mod source;
 
-use game::{Command, Game};
-
+use crate::game::{Command, Game};
 use crate::music::intervals::Interval;
 
 fn main() {
