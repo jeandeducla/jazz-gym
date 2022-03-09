@@ -3,6 +3,7 @@ use std::str::FromStr;
 pub enum Command {
     Start,
     Quit,
+    Replay,
 }
 
 impl FromStr for Command {
@@ -12,6 +13,7 @@ impl FromStr for Command {
         match s {
             "start" => Ok(Command::Start),
             "quit" => Ok(Command::Quit),
+            "replay" => Ok(Command::Replay),
             _ => Err(()),
         }
     }
