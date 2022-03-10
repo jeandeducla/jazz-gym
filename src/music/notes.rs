@@ -1,5 +1,7 @@
 use super::intervals::Interval;
 
+use std::str::FromStr;
+
 #[derive(Debug, Clone)]
 pub enum Note {
     C4,
@@ -15,6 +17,29 @@ pub enum Note {
     Bb4,
     B4,
     C5,
+}
+
+impl FromStr for Note {
+    type Err = ();
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "C4" => Ok(Note::C4),
+            "Db4" => Ok(Note::Db4),
+            "D4" => Ok(Note::D4),
+            "Eb4" => Ok(Note::Eb4),
+            "E4" => Ok(Note::E4),
+            "F4" => Ok(Note::F4),
+            "Gb4" => Ok(Note::Gb4),
+            "G4" => Ok(Note::G4),
+            "Ab4" => Ok(Note::Ab4),
+            "A4" => Ok(Note::A4),
+            "Bb4" => Ok(Note::Bb4),
+            "B4" => Ok(Note::B4),
+            "C5" => Ok(Note::C5),
+            _ => Err(()),
+        }
+    }
 }
 
 impl Note {

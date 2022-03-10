@@ -1,18 +1,17 @@
 use std::str::FromStr;
 
-use rustyline::error::ReadlineError;
 use rustyline::Editor;
+use rustyline::{error::ReadlineError, Result};
 
 mod game;
 mod music;
 mod player;
 mod source;
 
-use crate::game::{Command, Game};
-use crate::music::notes::Note;
+use crate::game::{Command, Session};
 
-fn main() {
-    let mut session: Option<Game> = None;
+fn main() -> Result<()> {
+    let mut session = Session::new();
 
     let mut rl = Editor::<()>::new();
 
@@ -29,9 +28,7 @@ fn main() {
         match readline {
             Ok(line) => match Command::from_str(&line) {
                 Ok(cmd) => match cmd {
-                    Command::Start => {
-                        session = Some(Game::new(2, Some(Note::C4), Some(vec![])));
-                    }
+                    Command::Start => session = Session::from_editor(&mut rl)?,
                     Command::Quit => {
                         println!("See You!");
                         break;
@@ -56,4 +53,6 @@ fn main() {
             }
         }
     }
+
+    Ok(())
 }
