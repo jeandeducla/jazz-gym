@@ -41,7 +41,7 @@ impl Display for Game {
         };
 
         let s = format!(
-            "          Game\n|>   challenges: {} ({})\n|>   base_note: {}\n|>   intervals: {}",
+            "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
             repeat("-").take(self.challenges.len()).collect::<String>(),
             self.challenges.len(),
             base_note,
@@ -93,11 +93,17 @@ impl Game {
     }
 
     pub fn play(&mut self, editor: &mut Editor<()>) -> Result<(), ()> {
-        println!("\n| Ok! Let's go!\n| ");
+        println!("| Ok! Let's go!");
+        println!("| ");
         println!("| {}", self);
 
+        let mut score = repeat('-')
+            .take(self.challenges.len())
+            .collect::<Vec<char>>();
+
         for (idx, challenge) in self.challenges.iter_mut().enumerate() {
-            println!("| \n| [{}] Listen...What interval is it? ", idx + 1);
+            println!("| ");
+            println!("| [{}] Listen...What interval is it? ", idx + 1);
             println!("|     (type 'replay' to replay the challenge)");
             challenge.play_correct_answer();
 
@@ -126,6 +132,15 @@ impl Game {
                                     );
                                 }
                             }
+
+                            if let Some(s) = score.get_mut(idx) {
+                                *s = match challenge.verify_user_answer() {
+                                    true => '*',
+                                    false => '_',
+                                };
+                            };
+                            println!("| [{}]", score.iter().collect::<String>());
+
                             break;
                         } else {
                             println!("| Invalid command: type 'replay' to replay the current challenge or type a valid interval");
@@ -138,8 +153,10 @@ impl Game {
             }
         }
 
-        println!("| \n| Game Over");
-        println!("| Your score is: {}\n", self.get_current_score());
+        println!("| ");
+        println!("| Game Over");
+        println!("| Your score is: {}", self.get_current_score());
+        println!();
 
         Ok(())
     }
