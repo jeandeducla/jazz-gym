@@ -54,15 +54,15 @@ impl Game {
     }
 
     pub fn play(&mut self, editor: &mut Editor<()>) -> Result<(), ()> {
-        println!("\nOk ! Let's go");
+        println!("\n| Ok ! Let's go");
 
         for (idx, challenge) in self.challenges.iter_mut().enumerate() {
-            println!("\n[.] Challenge number {}", idx + 1);
+            println!("| \n| [{}] Listen...What interval is it? ", idx + 1);
+            println!("|     (type 'replay' to replay the challenge)");
             challenge.play_correct_answer();
-            println!("What is the interval?");
 
             loop {
-                let readline = editor.readline(" --> ");
+                let readline = editor.readline("|___} ");
 
                 match readline {
                     Ok(input) => {
@@ -73,19 +73,22 @@ impl Game {
                         } else if let Ok(interval) = Interval::from_str(&input) {
                             challenge.answer(interval);
 
-                            println!("Your answer was...");
+                            println!("|    Your answer was...");
                             match challenge.verify_user_answer() {
                                 true => {
-                                    println!("     > Correct!");
+                                    println!("|         > Correct!");
                                 }
                                 false => {
-                                    println!("     x Uncorrect...");
-                                    println!("The correct answer was {}", challenge.correct_answer);
+                                    println!("|         x Uncorrect...");
+                                    println!(
+                                        "|    The correct answer was {}",
+                                        challenge.correct_answer
+                                    );
                                 }
                             }
                             break;
                         } else {
-                            println!("Invalid command: type 'replay' to replay the current challenge or type a valid interval");
+                            println!("| Invalid command: type 'replay' to replay the current challenge or type a valid interval");
                         }
                     }
                     Err(_) => {
@@ -95,8 +98,8 @@ impl Game {
             }
         }
 
-        println!("\nGame Over");
-        println!("Your score is: {}\n", self.get_current_score());
+        println!("| \n| Game Over");
+        println!("| Your score is: {}\n", self.get_current_score());
 
         Ok(())
     }
