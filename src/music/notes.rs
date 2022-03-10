@@ -1,5 +1,6 @@
 use super::intervals::Interval;
 
+use std::fmt::{self, Display};
 use std::str::FromStr;
 
 #[derive(Debug, Clone)]
@@ -17,6 +18,27 @@ pub enum Note {
     Bb4,
     B4,
     C5,
+}
+
+impl Display for Note {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Note::C4 => "C4",
+            Note::Db4 => "Db4",
+            Note::D4 => "D4",
+            Note::Eb4 => "Eb4",
+            Note::E4 => "E4",
+            Note::F4 => "F4",
+            Note::Gb4 => "Gb4",
+            Note::G4 => "G4",
+            Note::Ab4 => "Ab4",
+            Note::A4 => "A4",
+            Note::Bb4 => "Bb4",
+            Note::B4 => "B4",
+            Note::C5 => "C5",
+        };
+        write!(f, "{}", s)
+    }
 }
 
 impl FromStr for Note {

@@ -5,6 +5,8 @@ use crate::music::intervals::Interval;
 use crate::music::notes::Note;
 
 use rustyline::Editor;
+use std::fmt::{self, Display};
+use std::iter::repeat;
 use std::str::FromStr;
 
 const DEFAULT_CHALLENGE_NUM: usize = 5;
@@ -12,6 +14,41 @@ const DEFAULT_CHALLENGE_NUM: usize = 5;
 #[derive(Debug)]
 pub struct Game {
     pub challenges: Vec<Challenge>,
+    base_note: Option<Note>,
+    intervals: Option<Vec<Interval>>,
+}
+
+impl Display for Game {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let base_note = match self.base_note.as_ref() {
+            Some(note) => note.to_string(),
+            None => "All".to_owned(),
+        };
+
+        let intervals = match self.intervals.as_ref() {
+            Some(intervals) => {
+                if intervals.is_empty() {
+                    "All".to_owned()
+                } else {
+                    intervals
+                        .iter()
+                        .map(|i| i.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                }
+            }
+            None => "All".to_owned(),
+        };
+
+        let s = format!(
+            "          Game\n|>   challenges: {} ({})\n|>   base_note: {}\n|>   intervals: {}",
+            repeat("-").take(self.challenges.len()).collect::<String>(),
+            self.challenges.len(),
+            base_note,
+            intervals,
+        );
+        write!(f, "{}", s)
+    }
 }
 
 impl Game {
@@ -30,6 +67,8 @@ impl Game {
             challenges: (0..challenge_num)
                 .map(|_| Challenge::new(base_note.clone(), intervals.clone()))
                 .collect(),
+            base_note,
+            intervals,
         }
     }
 
@@ -54,7 +93,8 @@ impl Game {
     }
 
     pub fn play(&mut self, editor: &mut Editor<()>) -> Result<(), ()> {
-        println!("\n| Ok ! Let's go");
+        println!("\n| Ok! Let's go!\n| ");
+        println!("| {}", self);
 
         for (idx, challenge) in self.challenges.iter_mut().enumerate() {
             println!("| \n| [{}] Listen...What interval is it? ", idx + 1);
