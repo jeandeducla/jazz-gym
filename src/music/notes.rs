@@ -83,7 +83,7 @@ impl Note {
         }
     }
 
-    fn position(&self) -> u8 {
+    pub fn position(&self) -> u8 {
         match self {
             Note::C4 => 0,
             Note::Db4 => 1,

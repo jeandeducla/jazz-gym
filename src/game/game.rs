@@ -161,3 +161,21 @@ impl Game {
         Ok(())
     }
 }
+
+// println!("You will hear a two-note interval and your goal is to ");
+// println!("recognize it by typing one of the following:");
+// println!(" - 'P1': for a Perfect Unission");
+// println!(" - 'm2': for a Minor Second");
+// println!(" - 'M2': for a Major Second");
+// println!(" - 'm3': for a Minor Third");
+// println!(" - 'M3': for a Major Third");
+// println!(" - 'P4': for a Perfect Fourth");
+// println!(" - 'P5': for a Perfect Fifth");
+// println!(" - 'd5': for a Diminished Fifth");
+// println!(" - 'm6': for a Minor Sixth ");
+// println!(" - 'M6': for a Major Sixth");
+// println!(" - 'm7': for a Minor Seventh");
+// println!(" - 'M7': for a Major Seventh");
+// println!(" - 'P8': for a Perfect Octave");
+// println!("Do you want to start a new game? (type: 'start' to start");
+// println!("and 'quit' to quit the game)");

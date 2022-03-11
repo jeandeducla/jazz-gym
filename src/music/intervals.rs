@@ -1,7 +1,7 @@
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
 pub enum Interval {
     PerfectUnission,
     MinorSecond,
