@@ -1,6 +1,5 @@
-use super::challenge::Challenge;
-use super::command::Command;
-use super::score::Score;
+use crate::gym::challenge::Challenge;
+use crate::gym::score::Score;
 use crate::music::intervals::Interval;
 use crate::music::notes::Note;
 
@@ -162,6 +161,24 @@ impl Game {
     }
 }
 
+pub enum Command {
+    Start,
+    Quit,
+    Replay,
+}
+
+impl FromStr for Command {
+    type Err = ();
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "start" => Ok(Command::Start),
+            "quit" => Ok(Command::Quit),
+            "replay" => Ok(Command::Replay),
+            _ => Err(()),
+        }
+    }
+}
 // println!("You will hear a two-note interval and your goal is to ");
 // println!("recognize it by typing one of the following:");
 // println!(" - 'P1': for a Perfect Unission");
