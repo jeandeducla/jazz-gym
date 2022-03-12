@@ -16,8 +16,10 @@ pub struct Parameters {
 }
 
 impl Parameters {
-    // TODO: Back button
-    // TODO: input validation
+    pub fn new() -> Self {
+        Parameters::default()
+    }
+
     fn set_num_challenges(&mut self, num_challenges: usize) -> Result<(), ()> {
         if num_challenges <= MAX_CHALLENGE_NUM {
             self.num_challenges = num_challenges;
@@ -92,8 +94,7 @@ impl Parameters {
                             };
                         },
                         Command::Reset => {
-                            // self = Parameters::default();
-                            println!("Parameters reset");
+                            *self = Parameters::new();
                             menu();
                         }
                         Command::Back => return,

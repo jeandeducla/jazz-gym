@@ -7,7 +7,7 @@ use super::parameters::Parameters;
 
 pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
     menu();
-    let mut parameters = Parameters::default();
+    let mut parameters = Parameters::new();
     loop {
         match editor.readline(">> ") {
             Ok(line) => match Command::from_str(&line) {
