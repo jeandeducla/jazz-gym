@@ -4,14 +4,14 @@ use std::str::FromStr;
 
 use crate::gym::games::chordguesser;
 
-pub fn start(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
+pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
     menu();
     loop {
         match editor.readline(">> ") {
             Ok(line) => match Command::from_str(&line) {
                 Ok(cmd) => match cmd {
                     Command::ChordGuesser => {
-                        let _ = chordguesser::start(editor);
+                        let _ = chordguesser::navigate(editor);
                         menu();
                     }
                     Command::Back => {

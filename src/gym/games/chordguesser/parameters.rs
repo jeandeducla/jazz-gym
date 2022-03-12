@@ -16,7 +16,7 @@ pub struct Parameters {
 
 impl Parameters {
     // TODO: have a back in parameters menu
-    pub fn start(&mut self, editor: &mut Editor<()>) {
+    pub fn navigate(&mut self, editor: &mut Editor<()>) {
         menu();
         loop {
             match editor.readline(">> ") {
@@ -33,7 +33,6 @@ impl Parameters {
                                 Err(_) => {}
                             };
                             self.num_challenges_menu();
-                            println!("{:?}", self);
                         }
                         Command::BaseNote => {
                             self.base_note_menu();
@@ -46,7 +45,6 @@ impl Parameters {
                                 Err(_) => {}
                             };
                             self.base_note_menu();
-                            println!("{:?}", self);
                         }
                         Command::Intervals => {
                             self.intervals_menu();
@@ -62,7 +60,6 @@ impl Parameters {
                                 Err(_) => {}
                             };
                             self.intervals_menu();
-                            println!("{:?}", self);
                         }
                         Command::Reset => {
                             // self = Parameters::default();

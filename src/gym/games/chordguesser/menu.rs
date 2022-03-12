@@ -2,10 +2,10 @@ use rustyline::{error::ReadlineError, Editor};
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
+use super::game::Game;
 use super::parameters::Parameters;
-use crate::gym::games::game::Game;
 
-pub fn start(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
+pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
     menu();
     let mut parameters = Parameters::default();
     loop {
@@ -21,7 +21,7 @@ pub fn start(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
                         let _ = game.play(editor);
                     }
                     Command::Parameters => {
-                        parameters.start(editor);
+                        parameters.navigate(editor);
                         menu()
                     }
                     Command::Back => {

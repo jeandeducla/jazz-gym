@@ -1,4 +1,5 @@
-mod chordguesser;
+mod game;
+mod menu;
 mod parameters;
 
-pub use self::chordguesser::start;
+pub use self::menu::navigate;

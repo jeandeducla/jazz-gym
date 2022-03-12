@@ -17,39 +17,6 @@ pub struct Game {
     intervals: Option<Vec<Interval>>,
 }
 
-impl Display for Game {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let base_note = match self.base_note.as_ref() {
-            Some(note) => note.to_string(),
-            None => "All".to_owned(),
-        };
-
-        let intervals = match self.intervals.as_ref() {
-            Some(intervals) => {
-                if intervals.is_empty() {
-                    "All".to_owned()
-                } else {
-                    intervals
-                        .iter()
-                        .map(|i| i.to_string())
-                        .collect::<Vec<String>>()
-                        .join(", ")
-                }
-            }
-            None => "All".to_owned(),
-        };
-
-        let s = format!(
-            "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
-            repeat("-").take(self.challenges.len()).collect::<String>(),
-            self.challenges.len(),
-            base_note,
-            intervals,
-        );
-        write!(f, "{}", s)
-    }
-}
-
 impl Game {
     pub fn new(
         challenge_num: usize,
@@ -111,10 +78,8 @@ impl Game {
 
                 match readline {
                     Ok(input) => {
-                        if let Ok(cmd) = Command::from_str(&input) {
-                            if let Command::Replay = cmd {
-                                challenge.play_correct_answer();
-                            }
+                        if let Ok(_) = Command::from_str(&input) {
+                            challenge.play_correct_answer();
                         } else if let Ok(interval) = Interval::from_str(&input) {
                             challenge.answer(interval);
 
@@ -161,9 +126,40 @@ impl Game {
     }
 }
 
+impl Display for Game {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let base_note = match self.base_note.as_ref() {
+            Some(note) => note.to_string(),
+            None => "All".to_owned(),
+        };
+
+        let intervals = match self.intervals.as_ref() {
+            Some(intervals) => {
+                if intervals.is_empty() {
+                    "All".to_owned()
+                } else {
+                    intervals
+                        .iter()
+                        .map(|i| i.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                }
+            }
+            None => "All".to_owned(),
+        };
+
+        let s = format!(
+            "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
+            repeat("-").take(self.challenges.len()).collect::<String>(),
+            self.challenges.len(),
+            base_note,
+            intervals,
+        );
+        write!(f, "{}", s)
+    }
+}
+
 pub enum Command {
-    Start,
-    Quit,
     Replay,
 }
 
@@ -172,8 +168,6 @@ impl FromStr for Command {
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
-            "start" => Ok(Command::Start),
-            "quit" => Ok(Command::Quit),
             "replay" => Ok(Command::Replay),
             _ => Err(()),
         }

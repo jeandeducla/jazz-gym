@@ -19,11 +19,11 @@ impl Session {
                 Ok(line) => match Command::from_str(&line) {
                     Ok(cmd) => match cmd {
                         Command::Games => {
-                            let _ = games::start(editor);
+                            let _ = games::navigate(editor);
                             menu();
                         }
                         Command::Quit => {
-                            println!("See you mfk!");
+                            println!("See you!");
                             break;
                         }
                     },
