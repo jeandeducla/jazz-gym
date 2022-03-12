@@ -34,78 +34,9 @@ impl Parameters {
             match editor.readline(">> ") {
                 Ok(line) => match Command::from_str(&line) {
                     Ok(cmd) => match cmd {
-                        Command::NumChallenges => loop {
-                            self.num_challenges_menu();
-                            match editor.readline(">> ") {
-                                Ok(num) => {
-                                    if let Ok(num) = usize::from_str(&num) {
-                                        if num == 0 {
-                                            break;
-                                        }
-                                        if let Err(_) = self.set_num_challenges(num) {
-                                            break;
-                                        }
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                Err(_) => {
-                                    break;
-                                }
-                            };
-                        },
-                        Command::BaseNote => loop {
-                            self.base_note_menu();
-                            match editor.readline(">> ") {
-                                Ok(num) => {
-                                    if let Ok(num) = u8::from_str(&num) {
-                                        if num == 0 {
-                                            break;
-                                        }
-                                        self.base_note = Some(Note::from(num - 1));
-                                    } else if num == "@" {
-                                        self.base_note = None;
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                Err(_) => {
-                                    break;
-                                }
-                            };
-                        },
-                        Command::Intervals => loop {
-                            self.intervals_menu();
-                            match editor.readline(">> ") {
-                                Ok(num) => {
-                                    if let Ok(num) = u8::from_str(&num) {
-                                        if num == 0 {
-                                            break;
-                                        }
-                                        let interval = Interval::from(num - 1);
-                                        match &mut self.intervals {
-                                            Some(intervals) => {
-                                                if !intervals.remove(&interval) {
-                                                    intervals.insert(interval);
-                                                }
-                                            }
-                                            None => {
-                                                let mut intervals = HashSet::new();
-                                                intervals.insert(interval);
-                                                self.intervals = Some(intervals);
-                                            }
-                                        }
-                                    } else if num == "@" {
-                                        self.intervals.take();
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                Err(_) => {
-                                    break;
-                                }
-                            };
-                        },
+                        Command::NumChallenges => self.navigate_num_challenges(editor),
+                        Command::BaseNote => self.navigate_base_note(editor),
+                        Command::Intervals => self.navigate_intervals(editor),
                         Command::Reset => {
                             *self = Parameters::new();
                             menu();
@@ -119,6 +50,87 @@ impl Parameters {
                 },
                 Err(_) => break,
             }
+        }
+    }
+
+    fn navigate_num_challenges(&mut self, editor: &mut Editor<()>) {
+        loop {
+            self.num_challenges_menu();
+            match editor.readline(">> ") {
+                Ok(num) => {
+                    if let Ok(num) = usize::from_str(&num) {
+                        if num == 0 {
+                            break;
+                        }
+                        if let Err(_) = self.set_num_challenges(num) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                Err(_) => {
+                    break;
+                }
+            };
+        }
+    }
+
+    fn navigate_base_note(&mut self, editor: &mut Editor<()>) {
+        loop {
+            self.base_note_menu();
+            match editor.readline(">> ") {
+                Ok(num) => {
+                    if let Ok(num) = u8::from_str(&num) {
+                        if num == 0 {
+                            break;
+                        }
+                        self.base_note = Some(Note::from(num - 1));
+                    } else if num == "@" {
+                        self.base_note = None;
+                    } else {
+                        break;
+                    }
+                }
+                Err(_) => {
+                    break;
+                }
+            };
+        }
+    }
+
+    fn navigate_intervals(&mut self, editor: &mut Editor<()>) {
+        loop {
+            self.intervals_menu();
+            match editor.readline(">> ") {
+                Ok(num) => {
+                    if let Ok(num) = u8::from_str(&num) {
+                        if num == 0 {
+                            break;
+                        }
+                        let interval = Interval::from(num - 1);
+                        match &mut self.intervals {
+                            Some(intervals) => {
+                                if !intervals.remove(&interval) {
+                                    intervals.insert(interval);
+                                }
+                            }
+                            None => {
+                                let mut intervals = HashSet::new();
+                                intervals.insert(interval);
+                                self.intervals = Some(intervals);
+                            }
+                        }
+                    } else if num == "@" {
+                        self.intervals.take();
+                    } else {
+                        break;
+                    }
+                }
+                Err(_) => {
+                    break;
+                }
+            };
         }
     }
 
