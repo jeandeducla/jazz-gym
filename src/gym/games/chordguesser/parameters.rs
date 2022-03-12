@@ -15,52 +15,71 @@ pub struct Parameters {
 }
 
 impl Parameters {
-    // TODO: have a back in parameters menu
+    // TODO: Back button
+    // TODO: input validation
     pub fn navigate(&mut self, editor: &mut Editor<()>) {
-        menu();
         loop {
+            menu();
             match editor.readline(">> ") {
                 Ok(line) => match Command::from_str(&line) {
                     Ok(cmd) => match cmd {
-                        Command::NumChallenges => {
+                        Command::NumChallenges => loop {
                             self.num_challenges_menu();
                             match editor.readline(">> ") {
                                 Ok(num) => {
                                     if let Ok(num) = usize::from_str(&num) {
+                                        if num == 0 {
+                                            break;
+                                        }
                                         self.num_challenges = num;
+                                    } else {
+                                        break;
                                     }
                                 }
-                                Err(_) => {}
+                                Err(_) => {
+                                    break;
+                                }
                             };
-                            self.num_challenges_menu();
-                        }
-                        Command::BaseNote => {
+                        },
+                        Command::BaseNote => loop {
                             self.base_note_menu();
                             match editor.readline(">> ") {
                                 Ok(num) => {
                                     if let Ok(num) = u8::from_str(&num) {
-                                        self.base_note = Note::from(num);
+                                        if num == 0 {
+                                            break;
+                                        }
+                                        self.base_note = Note::from(num - 1);
+                                    } else {
+                                        break;
                                     }
                                 }
-                                Err(_) => {}
+                                Err(_) => {
+                                    break;
+                                }
                             };
-                            self.base_note_menu();
-                        }
-                        Command::Intervals => {
+                        },
+                        Command::Intervals => loop {
                             self.intervals_menu();
                             match editor.readline(">> ") {
                                 Ok(num) => {
                                     if let Ok(num) = u8::from_str(&num) {
-                                        let interval = Interval::from(num);
+                                        if num == 0 {
+                                            break;
+                                        }
+                                        let interval = Interval::from(num - 1);
                                         if !self.intervals.remove(&interval) {
                                             self.intervals.insert(interval);
                                         }
+                                    } else {
+                                        break;
                                     }
                                 }
-                                Err(_) => {}
+                                Err(_) => {
+                                    break;
+                                }
                             };
-                            self.intervals_menu();
-                        }
+                        },
                         Command::Reset => {
                             // self = Parameters::default();
                             println!("Parameters reset");
@@ -107,6 +126,8 @@ impl Parameters {
             })
             .for_each(|s| println!("{}", s));
         println!();
+        println!("  [0]< back");
+        println!();
     }
 
     fn base_note_menu(&self) {
@@ -132,12 +153,17 @@ impl Parameters {
                             false => ".",
                         };
                         let note: Note = (idx as u8).into();
-                        format!("{:<15}", format!("  [{:>2}]({})> {}", idx, checked, note))
+                        format!(
+                            "{:<15}",
+                            format!("  [{:>2}]({})> {}", idx + 1, checked, note)
+                        )
                     })
                     .collect::<Vec<String>>()
                     .join(" ")
             })
             .for_each(|s| println!("{}", s));
+        println!();
+        println!("  [0]< back");
         println!();
     }
 
@@ -155,10 +181,12 @@ impl Parameters {
                 };
                 format!(
                     "{:<10}",
-                    format!("  [{:>2}]({})> {}", idx, checked, interval)
+                    format!("  [{:>2}]({})> {}", idx + 1, checked, interval)
                 )
             })
             .for_each(|s| println!("{}", s));
+        println!();
+        println!("  [0]< back");
         println!();
     }
 }
