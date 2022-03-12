@@ -4,6 +4,7 @@ use std::fmt::{self, Display};
 use std::str::FromStr;
 use std::usize;
 
+use super::game::MAX_CHALLENGE_NUM;
 use crate::music::intervals::Interval;
 use crate::music::notes::Note;
 
@@ -17,6 +18,14 @@ pub struct Parameters {
 impl Parameters {
     // TODO: Back button
     // TODO: input validation
+    fn set_num_challenges(&mut self, num_challenges: usize) -> Result<(), ()> {
+        if num_challenges <= MAX_CHALLENGE_NUM {
+            self.num_challenges = num_challenges;
+            return Ok(());
+        }
+        Err(())
+    }
+
     pub fn navigate(&mut self, editor: &mut Editor<()>) {
         loop {
             menu();
@@ -31,7 +40,9 @@ impl Parameters {
                                         if num == 0 {
                                             break;
                                         }
-                                        self.num_challenges = num;
+                                        if let Err(_) = self.set_num_challenges(num) {
+                                            break;
+                                        }
                                     } else {
                                         break;
                                     }
@@ -136,9 +147,9 @@ impl Parameters {
         println!();
         (0..4)
             .map(|i| {
-                (0..12)
+                (0..13)
                     .into_iter()
-                    .filter(|c| c % 3 == i)
+                    .filter(|c| c % 4 == i)
                     .collect::<Vec<usize>>()
             })
             .collect::<Vec<Vec<usize>>>()

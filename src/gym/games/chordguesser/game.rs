@@ -9,6 +9,7 @@ use std::iter::repeat;
 use std::str::FromStr;
 
 const DEFAULT_CHALLENGE_NUM: usize = 5;
+pub const MAX_CHALLENGE_NUM: usize = 20;
 
 #[derive(Debug)]
 pub struct Game {
