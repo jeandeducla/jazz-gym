@@ -2,7 +2,7 @@ use rustyline::{error::ReadlineError, Editor};
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
-use crate::gym::games::chordguesser::chordguesser;
+use crate::gym::games::chordguesser;
 
 pub fn start(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
     menu();
