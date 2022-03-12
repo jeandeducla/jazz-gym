@@ -4,6 +4,7 @@ use crate::music::intervals::Interval;
 use crate::music::notes::Note;
 
 use rustyline::Editor;
+use std::collections::HashSet;
 use std::fmt::{self, Display};
 use std::iter::repeat;
 use std::str::FromStr;
@@ -15,14 +16,14 @@ pub const MAX_CHALLENGE_NUM: usize = 20;
 pub struct Game {
     pub challenges: Vec<Challenge>,
     base_note: Option<Note>,
-    intervals: Option<Vec<Interval>>,
+    intervals: Option<HashSet<Interval>>,
 }
 
 impl Game {
     pub fn new(
         challenge_num: usize,
         base_note: Option<Note>,
-        intervals: Option<Vec<Interval>>,
+        intervals: Option<HashSet<Interval>>,
     ) -> Self {
         let challenge_num = if challenge_num == 0 {
             DEFAULT_CHALLENGE_NUM

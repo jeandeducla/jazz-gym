@@ -6,6 +6,7 @@ use crate::{
 };
 
 use rand::Rng;
+use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct Challenge {
@@ -16,7 +17,7 @@ pub struct Challenge {
 
 impl Challenge {
     // TODO: possible to have referece instead of cloning?
-    pub fn new(base_note: Option<Note>, intervals: Option<Vec<Interval>>) -> Self {
+    pub fn new(base_note: Option<Note>, intervals: Option<HashSet<Interval>>) -> Self {
         let base_note: Note = match base_note {
             Some(base_note) => base_note,
             None => rand::thread_rng().gen_range(0, 13).into(),
@@ -26,7 +27,12 @@ impl Challenge {
             Some(intervals) => {
                 if !intervals.is_empty() {
                     let idx = rand::thread_rng().gen_range(0, intervals.len());
-                    intervals.get(idx).unwrap().to_owned()
+                    intervals
+                        .into_iter()
+                        .collect::<Vec<Interval>>()
+                        .get(idx)
+                        .unwrap()
+                        .to_owned()
                 } else {
                     rand::thread_rng().gen_range(0, 13).into()
                 }

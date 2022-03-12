@@ -11,8 +11,8 @@ use crate::music::notes::Note;
 #[derive(Debug)]
 pub struct Parameters {
     pub num_challenges: usize,
-    pub base_note: Note,
-    pub intervals: HashSet<Interval>,
+    pub base_note: Option<Note>,
+    pub intervals: Option<HashSet<Interval>>,
 }
 
 impl Parameters {
@@ -62,7 +62,9 @@ impl Parameters {
                                         if num == 0 {
                                             break;
                                         }
-                                        self.base_note = Note::from(num - 1);
+                                        self.base_note = Some(Note::from(num - 1));
+                                    } else if num == "@" {
+                                        self.base_note = None;
                                     } else {
                                         break;
                                     }
@@ -81,9 +83,20 @@ impl Parameters {
                                             break;
                                         }
                                         let interval = Interval::from(num - 1);
-                                        if !self.intervals.remove(&interval) {
-                                            self.intervals.insert(interval);
+                                        match &mut self.intervals {
+                                            Some(intervals) => {
+                                                if !intervals.remove(&interval) {
+                                                    intervals.insert(interval);
+                                                }
+                                            }
+                                            None => {
+                                                let mut intervals = HashSet::new();
+                                                intervals.insert(interval);
+                                                self.intervals = Some(intervals);
+                                            }
                                         }
+                                    } else if num == "@" {
+                                        self.intervals.take();
                                     } else {
                                         break;
                                     }
@@ -160,9 +173,13 @@ impl Parameters {
             .map(|v| {
                 v.into_iter()
                     .map(|idx| {
-                        let checked = match idx == self.base_note.position() as usize {
-                            true => "x",
-                            false => ".",
+                        let checked = if let Some(base_note) = &self.base_note {
+                            match idx == base_note.position() as usize {
+                                true => "x",
+                                false => ".",
+                            }
+                        } else {
+                            "."
                         };
                         let note: Note = (idx as u8).into();
                         format!(
@@ -174,6 +191,10 @@ impl Parameters {
                     .join(" ")
             })
             .for_each(|s| println!("{}", s));
+
+        let checked = if self.base_note.is_none() { "x" } else { "." };
+        println!();
+        println!("  [ @]({})> Random", checked);
         println!();
         println!("  [0]< back");
         println!();
@@ -187,9 +208,13 @@ impl Parameters {
             .into_iter()
             .map(|idx| {
                 let interval: Interval = (idx as u8).into();
-                let checked = match self.intervals.get(&interval).is_some() {
-                    true => "x",
-                    false => ".",
+                let checked = if let Some(intervals) = &self.intervals {
+                    match intervals.get(&interval).is_some() {
+                        true => "x",
+                        false => ".",
+                    }
+                } else {
+                    "."
                 };
                 format!(
                     "{:<10}",
@@ -197,6 +222,10 @@ impl Parameters {
                 )
             })
             .for_each(|s| println!("{}", s));
+
+        let checked = if self.intervals.is_none() { "x" } else { "." };
+        println!();
+        println!("  [ @]({})> Random", checked);
         println!();
         println!("  [0]< back");
         println!();
@@ -205,11 +234,10 @@ impl Parameters {
 
 impl Default for Parameters {
     fn default() -> Self {
-        // TODO: hashet default?
         Parameters {
             num_challenges: 5,
-            base_note: Note::C4,
-            intervals: HashSet::new(),
+            base_note: Some(Note::C4),
+            intervals: None,
         }
     }
 }

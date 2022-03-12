@@ -15,8 +15,8 @@ pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
                     Command::Start => {
                         let mut game = Game::new(
                             parameters.num_challenges,
-                            Some(parameters.base_note.clone()),
-                            Some(parameters.intervals.clone().into_iter().collect()),
+                            parameters.base_note.clone(),
+                            parameters.intervals.clone(),
                         );
                         let _ = game.play(editor);
                     }
