@@ -37,10 +37,7 @@ impl Parameters {
                         Command::NumChallenges => self.navigate_num_challenges(editor),
                         Command::BaseNote => self.navigate_base_note(editor),
                         Command::Intervals => self.navigate_intervals(editor),
-                        Command::Reset => {
-                            *self = Parameters::new();
-                            menu();
-                        }
+                        Command::Reset => *self = Parameters::new(),
                         Command::Back => return,
                     },
                     Err(_) => {
