@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Clone, Eq, Hash)]
 pub enum Interval {
-    PerfectUnission,
+    PerfectUnison,
     MinorSecond,
     MajorSecond,
     MinorThird,
@@ -21,7 +21,7 @@ pub enum Interval {
 impl Interval {
     pub fn as_u8(&self) -> u8 {
         match self {
-            Interval::PerfectUnission => 0,
+            Interval::PerfectUnison => 0,
             Interval::MinorSecond => 1,
             Interval::MajorSecond => 2,
             Interval::MinorThird => 3,
@@ -43,7 +43,7 @@ impl FromStr for Interval {
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
-            "P1" => Ok(Interval::PerfectUnission),
+            "P1" => Ok(Interval::PerfectUnison),
             "m2" => Ok(Interval::MinorSecond),
             "M2" => Ok(Interval::MajorSecond),
             "m3" => Ok(Interval::MinorThird),
@@ -64,7 +64,7 @@ impl FromStr for Interval {
 impl Into<u8> for Interval {
     fn into(self) -> u8 {
         match self {
-            Interval::PerfectUnission => 0,
+            Interval::PerfectUnison => 0,
             Interval::MinorSecond => 1,
             Interval::MajorSecond => 2,
             Interval::MinorThird => 3,
@@ -84,7 +84,7 @@ impl Into<u8> for Interval {
 impl From<u8> for Interval {
     fn from(value: u8) -> Interval {
         match value {
-            0 => Interval::PerfectUnission,
+            0 => Interval::PerfectUnison,
             1 => Interval::MinorSecond,
             2 => Interval::MajorSecond,
             3 => Interval::MinorThird,
@@ -105,7 +105,7 @@ impl From<u8> for Interval {
 impl Display for Interval {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            Interval::PerfectUnission => "PerfectUnission (P1)",
+            Interval::PerfectUnison => "Perfect Unission (P1)",
             Interval::MinorSecond => "Minor Second (m2)",
             Interval::MajorSecond => "Major Second (M2)",
             Interval::MinorThird => "Minor Third (m3)",

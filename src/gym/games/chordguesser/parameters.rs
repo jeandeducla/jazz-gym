@@ -203,7 +203,7 @@ impl Parameters {
 
         let checked = if self.base_note.is_none() { "x" } else { "." };
         println!();
-        println!("  [ @]({})> Random", checked);
+        println!("  [@]({})> Random", checked);
         println!();
         println!("  [0]< back");
         println!();
@@ -234,7 +234,7 @@ impl Parameters {
 
         let checked = if self.intervals.is_none() { "x" } else { "." };
         println!();
-        println!("  [ @]({})> Random", checked);
+        println!("  [@]({})> Random", checked);
         println!();
         println!("  [0]< back");
         println!();

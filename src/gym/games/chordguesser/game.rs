@@ -4,6 +4,7 @@ use crate::music::intervals::Interval;
 use crate::music::notes::Note;
 
 use rustyline::Editor;
+use std::cell::RefCell;
 use std::collections::HashSet;
 use std::fmt::{self, Display};
 use std::iter::repeat;
@@ -14,7 +15,7 @@ pub const MAX_CHALLENGE_NUM: usize = 20;
 
 #[derive(Debug)]
 pub struct Game {
-    pub challenges: Vec<Challenge>,
+    pub challenges: RefCell<Vec<Challenge>>,
     base_note: Option<Note>,
     intervals: Option<HashSet<Interval>>,
 }
@@ -32,9 +33,11 @@ impl Game {
         };
 
         Game {
-            challenges: (0..challenge_num)
-                .map(|_| Challenge::new(base_note.clone(), intervals.clone()))
-                .collect(),
+            challenges: RefCell::new(
+                (0..challenge_num)
+                    .map(|_| Challenge::new(base_note.clone(), intervals.clone()))
+                    .collect(),
+            ),
             base_note,
             intervals,
         }
@@ -44,6 +47,7 @@ impl Game {
         Score {
             correct_answers: self
                 .challenges
+                .borrow()
                 .iter()
                 .filter(|c| c.user_answer.is_some())
                 .fold(
@@ -56,24 +60,46 @@ impl Game {
                         }
                     },
                 ),
-            total_answers: self.challenges.len(),
+            total_answers: self.challenges.borrow().len(),
         }
     }
 
-    pub fn play(&mut self, editor: &mut Editor<()>) -> Result<(), ()> {
+    fn available_commands_menu(&self) {
+        match self.intervals.as_ref() {
+            Some(intervals) => intervals
+                .into_iter()
+                .collect::<Vec<&Interval>>()
+                .iter()
+                .enumerate()
+                .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
+                .for_each(|s| println!("{}", s)),
+            None => (0..13)
+                .into_iter()
+                .map(|i| Interval::from(i))
+                .enumerate()
+                .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
+                .for_each(|s| println!("{}", s)),
+        }
+        println!("| ");
+        println!("|         r> Replay");
+        println!("| ");
+    }
+
+    pub fn navigate(&mut self, editor: &mut Editor<()>) -> Result<(), ()> {
         println!("| Ok! Let's go!");
         println!("| ");
         println!("| {}", self);
 
         let mut score = repeat('-')
-            .take(self.challenges.len())
+            .take(self.challenges.borrow().len())
             .collect::<Vec<char>>();
 
-        for (idx, challenge) in self.challenges.iter_mut().enumerate() {
+        for (idx, challenge) in self.challenges.borrow_mut().iter_mut().enumerate() {
             println!("| ");
             println!("| [{}] Listen...What interval is it? ", idx + 1);
-            println!("|     (type 'replay' to replay the challenge)");
+            println!("| ");
             challenge.play_correct_answer();
+            self.available_commands_menu();
 
             loop {
                 let readline = editor.readline("|___} ");
@@ -82,10 +108,25 @@ impl Game {
                     Ok(input) => {
                         if let Ok(_) = Command::from_str(&input) {
                             challenge.play_correct_answer();
-                        } else if let Ok(interval) = Interval::from_str(&input) {
-                            challenge.answer(interval);
+                        } else if let Ok(num) = u8::from_str(&input) {
+                            let interval = match self
+                                .intervals
+                                .as_ref()
+                                .unwrap()
+                                .into_iter()
+                                .collect::<Vec<&Interval>>()
+                                .get(num as usize)
+                            {
+                                Some(interval) => interval.clone(),
+                                None => break,
+                            };
+                            challenge.answer(interval.clone());
 
-                            println!("|    Your answer was...");
+                            println!("|");
+                            println!(
+                                "|    Your answer {},  was...",
+                                challenge.user_answer.as_ref().unwrap()
+                            );
                             match challenge.verify_user_answer() {
                                 true => {
                                     println!("|         > Correct!");
@@ -108,8 +149,6 @@ impl Game {
                             println!("| [{}]", score.iter().collect::<String>());
 
                             break;
-                        } else {
-                            println!("| Invalid command: type 'replay' to replay the current challenge or type a valid interval");
                         }
                     }
                     Err(_) => {
@@ -150,10 +189,11 @@ impl Display for Game {
             None => "All".to_owned(),
         };
 
-        let s = format!(
+        let s =
+            format!(
             "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
-            repeat("-").take(self.challenges.len()).collect::<String>(),
-            self.challenges.len(),
+            repeat("-").take(self.challenges.borrow().len()).collect::<String>(),
+            self.challenges.borrow().len(),
             base_note,
             intervals,
         );
@@ -170,25 +210,8 @@ impl FromStr for Command {
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
-            "replay" => Ok(Command::Replay),
+            "r" => Ok(Command::Replay),
             _ => Err(()),
         }
     }
 }
-// println!("You will hear a two-note interval and your goal is to ");
-// println!("recognize it by typing one of the following:");
-// println!(" - 'P1': for a Perfect Unission");
-// println!(" - 'm2': for a Minor Second");
-// println!(" - 'M2': for a Major Second");
-// println!(" - 'm3': for a Minor Third");
-// println!(" - 'M3': for a Major Third");
-// println!(" - 'P4': for a Perfect Fourth");
-// println!(" - 'P5': for a Perfect Fifth");
-// println!(" - 'd5': for a Diminished Fifth");
-// println!(" - 'm6': for a Minor Sixth ");
-// println!(" - 'M6': for a Major Sixth");
-// println!(" - 'm7': for a Minor Seventh");
-// println!(" - 'M7': for a Major Seventh");
-// println!(" - 'P8': for a Perfect Octave");
-// println!("Do you want to start a new game? (type: 'start' to start");
-// println!("and 'quit' to quit the game)");

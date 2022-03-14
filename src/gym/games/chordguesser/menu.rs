@@ -18,7 +18,7 @@ pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
                             parameters.base_note.clone(),
                             parameters.intervals.clone(),
                         );
-                        let _ = game.play(editor);
+                        let _ = game.navigate(editor);
                     }
                     Command::Parameters => {
                         parameters.navigate(editor);
