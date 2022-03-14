@@ -121,39 +121,37 @@ impl Game {
                         if let Ok(_) = Command::from_str(&input) {
                             challenge.play_correct_answer();
                         } else if let Ok(num) = u8::from_str(&input) {
-                            let interval = match self.intervals.get((num - 1) as usize) {
-                                Some(interval) => interval.clone(),
-                                None => break,
-                            };
-                            challenge.answer(interval.clone());
+                            if let Some(interval) = self.intervals.get((num - 1) as usize) {
+                                challenge.answer(interval.clone());
 
-                            println!("|");
-                            println!(
-                                "|    Your answer {},  was...",
-                                challenge.user_answer.as_ref().unwrap()
-                            );
-                            match challenge.verify_user_answer() {
-                                true => {
-                                    println!("|         > Correct!");
+                                println!("|");
+                                println!(
+                                    "|    Your answer {},  was...",
+                                    challenge.user_answer.as_ref().unwrap()
+                                );
+                                match challenge.verify_user_answer() {
+                                    true => {
+                                        println!("|         > Correct!");
+                                    }
+                                    false => {
+                                        println!("|         x Uncorrect...");
+                                        println!(
+                                            "|    The correct answer was {}",
+                                            challenge.correct_answer
+                                        );
+                                    }
                                 }
-                                false => {
-                                    println!("|         x Uncorrect...");
-                                    println!(
-                                        "|    The correct answer was {}",
-                                        challenge.correct_answer
-                                    );
-                                }
-                            }
 
-                            if let Some(s) = score.get_mut(idx) {
-                                *s = match challenge.verify_user_answer() {
-                                    true => '*',
-                                    false => '_',
+                                if let Some(s) = score.get_mut(idx) {
+                                    *s = match challenge.verify_user_answer() {
+                                        true => '*',
+                                        false => '_',
+                                    };
                                 };
-                            };
-                            println!("| [{}]", score.iter().collect::<String>());
+                                println!("| [{}]", score.iter().collect::<String>());
 
-                            break;
+                                break;
+                            };
                         }
                     }
                     Err(_) => {

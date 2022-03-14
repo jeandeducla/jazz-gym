@@ -26,10 +26,11 @@ pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
                             intervals,
                         );
                         let _ = game.navigate(editor);
+                        menu();
                     }
                     Command::Parameters => {
                         parameters.navigate(editor);
-                        menu()
+                        menu();
                     }
                     Command::Back => {
                         break;
