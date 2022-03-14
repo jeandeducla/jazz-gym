@@ -3,9 +3,9 @@ use crate::gym::score::Score;
 use crate::music::intervals::Interval;
 use crate::music::notes::Note;
 
+use rand::Rng;
 use rustyline::Editor;
 use std::cell::RefCell;
-use std::collections::HashSet;
 use std::fmt::{self, Display};
 use std::iter::repeat;
 use std::str::FromStr;
@@ -16,15 +16,15 @@ pub const MAX_CHALLENGE_NUM: usize = 20;
 #[derive(Debug)]
 pub struct Game {
     pub challenges: RefCell<Vec<Challenge>>,
-    base_note: Option<Note>,
-    intervals: Option<HashSet<Interval>>,
+    base_note: Note,
+    intervals: Vec<Interval>,
 }
 
 impl Game {
     pub fn new(
         challenge_num: usize,
         base_note: Option<Note>,
-        intervals: Option<HashSet<Interval>>,
+        intervals: Option<Vec<Interval>>,
     ) -> Self {
         let challenge_num = if challenge_num == 0 {
             DEFAULT_CHALLENGE_NUM
@@ -32,10 +32,32 @@ impl Game {
             challenge_num
         };
 
+        let intervals = match intervals {
+            Some(mut intervals) => {
+                intervals.sort();
+                intervals
+            }
+            None => (0..13)
+                .into_iter()
+                .map(|i| Interval::from(i))
+                .collect::<Vec<Interval>>(),
+        };
+
+        let base_note: Note = match base_note {
+            Some(base_note) => base_note,
+            None => rand::thread_rng().gen_range(0, 13).into(),
+        };
+
         Game {
             challenges: RefCell::new(
                 (0..challenge_num)
-                    .map(|_| Challenge::new(base_note.clone(), intervals.clone()))
+                    .map(|_| {
+                        let correct_answer = {
+                            let idx = rand::thread_rng().gen_range(0, intervals.len());
+                            intervals.get(idx).unwrap()
+                        };
+                        Challenge::new(base_note.clone(), correct_answer.clone())
+                    })
                     .collect(),
             ),
             base_note,
@@ -65,21 +87,11 @@ impl Game {
     }
 
     fn available_commands_menu(&self) {
-        match self.intervals.as_ref() {
-            Some(intervals) => intervals
-                .into_iter()
-                .collect::<Vec<&Interval>>()
-                .iter()
-                .enumerate()
-                .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
-                .for_each(|s| println!("{}", s)),
-            None => (0..13)
-                .into_iter()
-                .map(|i| Interval::from(i))
-                .enumerate()
-                .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
-                .for_each(|s| println!("{}", s)),
-        }
+        self.intervals
+            .iter()
+            .enumerate()
+            .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
+            .for_each(|s| println!("{}", s));
         println!("| ");
         println!("|         r> Replay");
         println!("| ");
@@ -109,14 +121,7 @@ impl Game {
                         if let Ok(_) = Command::from_str(&input) {
                             challenge.play_correct_answer();
                         } else if let Ok(num) = u8::from_str(&input) {
-                            let interval = match self
-                                .intervals
-                                .as_ref()
-                                .unwrap()
-                                .into_iter()
-                                .collect::<Vec<&Interval>>()
-                                .get(num as usize)
-                            {
+                            let interval = match self.intervals.get((num - 1) as usize) {
                                 Some(interval) => interval.clone(),
                                 None => break,
                             };
@@ -169,32 +174,19 @@ impl Game {
 
 impl Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let base_note = match self.base_note.as_ref() {
-            Some(note) => note.to_string(),
-            None => "All".to_owned(),
-        };
-
-        let intervals = match self.intervals.as_ref() {
-            Some(intervals) => {
-                if intervals.is_empty() {
-                    "All".to_owned()
-                } else {
-                    intervals
-                        .iter()
-                        .map(|i| i.to_string())
-                        .collect::<Vec<String>>()
-                        .join(", ")
-                }
-            }
-            None => "All".to_owned(),
-        };
+        let intervals = self
+            .intervals
+            .iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
 
         let s =
             format!(
             "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
             repeat("-").take(self.challenges.borrow().len()).collect::<String>(),
             self.challenges.borrow().len(),
-            base_note,
+            self.base_note.to_string(),
             intervals,
         );
         write!(f, "{}", s)

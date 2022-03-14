@@ -2,6 +2,8 @@ use rustyline::{error::ReadlineError, Editor};
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
+use crate::music::intervals::Interval;
+
 use super::game::Game;
 use super::parameters::Parameters;
 
@@ -13,10 +15,15 @@ pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
             Ok(line) => match Command::from_str(&line) {
                 Ok(cmd) => match cmd {
                     Command::Start => {
+                        let intervals = parameters
+                            .intervals
+                            .clone()
+                            .map(|i| i.into_iter().collect::<Vec<Interval>>());
+
                         let mut game = Game::new(
                             parameters.num_challenges,
                             parameters.base_note.clone(),
-                            parameters.intervals.clone(),
+                            intervals,
                         );
                         let _ = game.navigate(editor);
                     }
