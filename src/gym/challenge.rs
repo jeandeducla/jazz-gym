@@ -1,8 +1,11 @@
+use rodio::source::SineWave;
+use rodio::Sink;
+use rodio::Source;
+use std::time::Duration;
+
 use crate::{
+    audio::Player,
     music::{intervals::Interval, notes::Note},
-    player::Player,
-    source::PolySines,
-    source::SineWave,
 };
 
 #[derive(Debug)]
@@ -35,17 +38,21 @@ impl Challenge {
     }
 
     fn play(&self, answer: &Interval) {
-        let sample_rate = 44100;
-        let num_points = 44100 * 2;
-        let player = Player::new(sample_rate);
-        let base_note = SineWave::new(self.base_note.freqency(), 44100.0, num_points);
-        let second_note = SineWave::new(
-            (self.base_note.add_interval(answer)).freqency(),
-            44100.0,
-            num_points,
-        );
-        let src = PolySines::new(base_note, second_note);
-        player.play(&src.collect::<Vec<i16>>());
+        let player = Player::new();
+
+        let base_note = SineWave::new(self.base_note.freqency())
+            .take_duration(Duration::from_secs(3))
+            .amplify(0.2);
+        let sink_1 = Sink::try_new(&player.stream_handle).unwrap();
+        sink_1.append(base_note);
+
+        let second_note = SineWave::new((self.base_note.add_interval(answer)).freqency())
+            .take_duration(Duration::from_secs(3))
+            .amplify(0.2);
+        let sink_2 = Sink::try_new(&player.stream_handle).unwrap();
+        sink_2.append(second_note);
+
+        player.play(&vec![sink_1, sink_2]);
     }
 
     pub fn play_correct_answer(&self) {
