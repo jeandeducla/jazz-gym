@@ -1,7 +1,7 @@
 use crate::gym::challenge::Challenge;
 use crate::gym::score::Score;
 use crate::music::intervals::Interval;
-use crate::music::notes::Note;
+use crate::music::pitches::Pitch;
 
 use rand::Rng;
 use rustyline::Editor;
@@ -16,14 +16,14 @@ pub const MAX_CHALLENGE_NUM: usize = 20;
 #[derive(Debug)]
 pub struct Game {
     pub challenges: RefCell<Vec<Challenge>>,
-    base_note: Note,
+    base_note: Pitch,
     intervals: Vec<Interval>,
 }
 
 impl Game {
     pub fn new(
         challenge_num: usize,
-        base_note: Option<Note>,
+        base_note: Option<Pitch>,
         intervals: Option<Vec<Interval>>,
     ) -> Self {
         let challenge_num = if challenge_num == 0 {
@@ -43,7 +43,7 @@ impl Game {
                 .collect::<Vec<Interval>>(),
         };
 
-        let base_note: Note = match base_note {
+        let base_note: Pitch = match base_note {
             Some(base_note) => base_note,
             None => rand::thread_rng().gen_range(0, 13).into(),
         };

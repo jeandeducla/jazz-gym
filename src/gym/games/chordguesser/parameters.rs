@@ -6,12 +6,12 @@ use std::usize;
 
 use super::game::MAX_CHALLENGE_NUM;
 use crate::music::intervals::Interval;
-use crate::music::notes::Note;
+use crate::music::pitches::Pitch;
 
 #[derive(Debug)]
 pub struct Parameters {
     pub num_challenges: usize,
-    pub base_note: Option<Note>,
+    pub base_note: Option<Pitch>,
     pub intervals: Option<HashSet<Interval>>,
 }
 
@@ -82,7 +82,7 @@ impl Parameters {
                         if num == 0 {
                             break;
                         }
-                        self.base_note = Some(Note::from(num - 1));
+                        self.base_note = Some(Pitch::from(num - 1));
                     } else if num == "@" {
                         self.base_note = None;
                     } else {
@@ -190,7 +190,7 @@ impl Parameters {
                         } else {
                             "."
                         };
-                        let note: Note = (idx as u8).into();
+                        let note: Pitch = (idx as u8).into();
                         format!(
                             "{:<15}",
                             format!("  [{:>2}]({})> {}", idx + 1, checked, note)
@@ -245,7 +245,7 @@ impl Default for Parameters {
     fn default() -> Self {
         Parameters {
             num_challenges: 5,
-            base_note: Some(Note::C4),
+            base_note: Some(Pitch::C4),
             intervals: None,
         }
     }
