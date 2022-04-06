@@ -1,5 +1,4 @@
-pub mod add;
-pub mod compass;
+pub mod bar;
 pub mod intervals;
 pub mod note;
 pub mod pitches;

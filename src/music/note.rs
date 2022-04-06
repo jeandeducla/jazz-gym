@@ -21,13 +21,9 @@ impl Note {
         }
     }
 
-    pub fn amplify(&mut self, amplitude: f32) {
-        self.amplitude = amplitude;
-    }
-
-    pub fn into_sine(&self, tempo: &Tempo) -> Amplify<TakeDuration<SineWave>> {
+    pub fn as_sine(&self, tempo: &Tempo) -> Amplify<TakeDuration<SineWave>> {
         SineWave::new(self.pitch.freqency())
-            .take_duration(self.duration.time_duration(tempo))
+            .take_duration(self.duration.seconds(tempo))
             .amplify(self.amplitude)
     }
 }

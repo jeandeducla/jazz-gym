@@ -1,11 +1,10 @@
-use super::compass::Compass;
+use super::bar::Bar;
 use super::rythm::{Tempo, TimeSignature};
-use crate::audio::Player;
 
 pub struct Song {
     tempo: Tempo,
     time_signature: TimeSignature,
-    compasses: Vec<Compass>,
+    compasses: Vec<Bar>,
 }
 
 impl Song {
@@ -17,17 +16,13 @@ impl Song {
         }
     }
 
-    pub fn push(&mut self, compass: Compass) {
+    pub fn push(&mut self, compass: Bar) {
         self.compasses.push(compass);
     }
 
     pub fn play(&self) {
-        // let player = Player::new();
         for compass in &self.compasses {
-            println!("coucou");
-            compass.play();
-            // player.play(&v);
-            println!("coucou");
+            compass.play(&self.tempo);
         }
     }
 }
