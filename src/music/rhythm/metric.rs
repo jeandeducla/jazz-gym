@@ -1,4 +1,4 @@
-use crate::music::tempo::Tempo;
+use super::tempo::Tempo;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Metric {

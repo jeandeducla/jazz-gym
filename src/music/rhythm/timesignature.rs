@@ -1,4 +1,4 @@
-use crate::music::tempo::Tempo;
+use super::tempo::Tempo;
 
 // TODO: let's assume the lower number of the time signature is 4 (i.e. quarter notes)
 #[derive(Copy, Clone, Debug)]

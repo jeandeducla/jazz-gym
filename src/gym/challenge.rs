@@ -5,12 +5,11 @@ use std::time::Duration;
 
 use crate::music::bar::Bar;
 use crate::music::note::Note;
+use crate::music::rhythm::{Metric, Tempo, TimeSignature};
 use crate::music::song::Song;
-use crate::music::tempo::Tempo;
-use crate::music::timesignature::TimeSignature;
 use crate::{
     audio::Player,
-    music::{intervals::Interval, metric, pitches::Pitch},
+    music::{intervals::Interval, pitches::Pitch},
 };
 
 #[derive(Debug)]
@@ -50,38 +49,17 @@ impl Challenge {
 
         let mut bar = Bar::new(time_signature.clone());
         println!("{:?}", bar);
-        bar.insert(Note::new(Pitch::C4, crate::music::metric::Metric::Whole), 0);
-        bar.insert(
-            Note::new(Pitch::E4, crate::music::metric::Metric::Quarter),
-            2,
-        );
-        bar.insert(
-            Note::new(Pitch::G4, crate::music::metric::Metric::Quarter),
-            4,
-        );
-        bar.insert(
-            Note::new(Pitch::B4, crate::music::metric::Metric::Quarter),
-            6,
-        );
+        bar.insert(Note::new(Pitch::C4, Metric::Whole), 0);
+        bar.insert(Note::new(Pitch::E4, Metric::Quarter), 2);
+        bar.insert(Note::new(Pitch::G4, Metric::Quarter), 4);
+        bar.insert(Note::new(Pitch::B4, Metric::Quarter), 6);
         song.push(bar);
 
         let mut compass = Bar::new(time_signature.clone());
-        compass.insert(
-            Note::new(Pitch::B4, crate::music::metric::Metric::Quarter),
-            0,
-        );
-        compass.insert(
-            Note::new(Pitch::G4, crate::music::metric::Metric::Quarter),
-            2,
-        );
-        compass.insert(
-            Note::new(Pitch::E4, crate::music::metric::Metric::Quarter),
-            4,
-        );
-        compass.insert(
-            Note::new(Pitch::C4, crate::music::metric::Metric::Quarter),
-            6,
-        );
+        compass.insert(Note::new(Pitch::B4, Metric::Quarter), 0);
+        compass.insert(Note::new(Pitch::G4, Metric::Quarter), 2);
+        compass.insert(Note::new(Pitch::E4, Metric::Quarter), 4);
+        compass.insert(Note::new(Pitch::C4, Metric::Quarter), 6);
         song.push(compass);
 
         song.play();

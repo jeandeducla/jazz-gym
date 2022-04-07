@@ -2,9 +2,8 @@ use rodio::source::SineWave;
 use rodio::source::{Amplify, TakeDuration};
 use rodio::Source;
 
-use super::metric::Metric;
 use super::pitches::Pitch;
-use super::tempo::Tempo;
+use super::rhythm::{Metric, Tempo};
 
 #[derive(Debug)]
 pub struct Note {

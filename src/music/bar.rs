@@ -1,7 +1,5 @@
-use super::metric::Metric;
 use super::note::Note;
-use super::tempo::Tempo;
-use super::timesignature::TimeSignature;
+use super::rhythm::{Metric, Tempo, TimeSignature};
 use crate::audio::Player;
 
 use rodio::dynamic_mixer;
