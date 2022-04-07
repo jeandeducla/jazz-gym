@@ -1,15 +1,16 @@
-use std::time::Duration;
-
+use super::metric::Metric;
 use super::note::Note;
-use super::rythm::{Tempo, TimeSignature};
+use super::tempo::Tempo;
+use super::timesignature::TimeSignature;
 use crate::audio::Player;
 
 use rodio::dynamic_mixer;
-use rodio::source::Source;
-use rodio::source::Zero;
+use rodio::Source;
+
+// TODO: SMALLEST_METRIC can only be lower than a quarter as we assume bpm is in quarter
+pub const SMALLEST_METRIC: Metric = Metric::Eighth;
 
 // TODO: make mut iterators over time division (Half, whole....)
-// TODO: COMPASS is in Spanish lol, Bar is the actual correct name
 #[derive(Debug)]
 pub struct Bar {
     time_signature: TimeSignature,
@@ -18,8 +19,10 @@ pub struct Bar {
 
 impl Bar {
     pub fn new(time_signature: TimeSignature) -> Self {
-        let mut beats = Vec::with_capacity(time_signature.sub_beats_per_bar());
-        for _ in (0..time_signature.sub_beats_per_bar()).into_iter() {
+        let division_level =
+            (time_signature.0 as f32 / SMALLEST_METRIC.as_fraction_of_beat()) as usize;
+        let mut beats = Vec::with_capacity(division_level);
+        for _ in (0..division_level).into_iter() {
             beats.push(None);
         }
         Bar {
@@ -40,19 +43,15 @@ impl Bar {
         let (input, output) = dynamic_mixer::mixer(2, 44100);
         for (i, beat) in self.beats.iter().enumerate() {
             if let Some(note) = beat {
-                let delay = tempo.min_time_division().saturating_mul(i as u32);
+                let delay = SMALLEST_METRIC.duration(&tempo).saturating_mul(i as u32);
                 println!("note delay {:?}", delay);
-                let note = note
-                    .as_sine(&tempo)
-                    // .take_crossfade_with(Zero::<f32>::new(2, 44100), Duration::from_millis(350))
-                    .delay(delay);
+                let note = note.as_sine(&tempo).delay(delay);
                 input.add(note);
             }
         }
         let _ = player.stream_handle.play_raw(output);
-        let bar_duration = self.time_signature.compass_duration(&tempo);
+        let bar_duration = self.time_signature.bar_duration(&tempo);
         println!("coucou: {:?}", bar_duration);
         std::thread::sleep(bar_duration);
-        // std::thread::sleep(Duration::from_secs(10));
     }
 }

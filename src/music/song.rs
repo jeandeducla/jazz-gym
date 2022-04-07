@@ -1,5 +1,6 @@
 use super::bar::Bar;
-use super::rythm::{Tempo, TimeSignature};
+use super::tempo::Tempo;
+use super::timesignature::TimeSignature;
 
 pub struct Song {
     tempo: Tempo,

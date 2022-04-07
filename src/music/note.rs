@@ -2,18 +2,19 @@ use rodio::source::SineWave;
 use rodio::source::{Amplify, TakeDuration};
 use rodio::Source;
 
+use super::metric::Metric;
 use super::pitches::Pitch;
-use super::rythm::{self, Tempo};
+use super::tempo::Tempo;
 
 #[derive(Debug)]
 pub struct Note {
     pitch: Pitch,
-    duration: rythm::Duration,
+    duration: Metric,
     amplitude: f32,
 }
 
 impl Note {
-    pub fn new(pitch: Pitch, duration: rythm::Duration) -> Self {
+    pub fn new(pitch: Pitch, duration: Metric) -> Self {
         Note {
             pitch,
             duration,
@@ -23,7 +24,7 @@ impl Note {
 
     pub fn as_sine(&self, tempo: &Tempo) -> Amplify<TakeDuration<SineWave>> {
         SineWave::new(self.pitch.freqency())
-            .take_duration(self.duration.seconds(tempo))
+            .take_duration(self.duration.duration(tempo))
             .amplify(self.amplitude)
     }
 }
