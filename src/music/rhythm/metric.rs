@@ -12,7 +12,6 @@ impl Metric {
     pub fn duration(&self, bpm: &Tempo) -> std::time::Duration {
         // TODO: could have some overflow situations here
         let beat_duration = bpm.beat_duration();
-        println!("beat duration {:?}", beat_duration);
         match &self {
             Metric::Whole => beat_duration.checked_mul(4).unwrap(),
             Metric::Half => beat_duration.checked_mul(2).unwrap(),

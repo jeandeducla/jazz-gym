@@ -1,16 +1,7 @@
-use rodio::source::SineWave;
-use rodio::Sink;
-use rodio::Source;
-use std::time::Duration;
-
-use crate::music::bar::Bar;
 use crate::music::note::Note;
 use crate::music::rhythm::{Metric, Tempo, TimeSignature};
 use crate::music::song::Song;
-use crate::{
-    audio::Player,
-    music::{intervals::Interval, pitches::Pitch},
-};
+use crate::music::{intervals::Interval, pitches::Pitch};
 
 #[derive(Debug)]
 pub struct Challenge {
@@ -42,25 +33,16 @@ impl Challenge {
     }
 
     fn play(&self, answer: &Interval) {
-        let tempo = Tempo::new(180.0);
-        let time_signature = TimeSignature(4);
+        let tempo = Tempo::new(120.0);
+        let time_signature = TimeSignature(2);
 
         let mut song = Song::new(tempo.clone(), time_signature.clone());
 
-        let mut bar = Bar::new(time_signature.clone());
-        println!("{:?}", bar);
-        bar.insert(Note::new(Pitch::C4, Metric::Whole), 0);
-        bar.insert(Note::new(Pitch::E4, Metric::Quarter), 2);
-        bar.insert(Note::new(Pitch::G4, Metric::Quarter), 4);
-        bar.insert(Note::new(Pitch::B4, Metric::Quarter), 6);
-        song.push(bar);
+        let bar = song.new_bar();
+        bar.insert(Note::new(self.base_note.clone(), Metric::Quarter), 0);
 
-        let mut compass = Bar::new(time_signature.clone());
-        compass.insert(Note::new(Pitch::B4, Metric::Quarter), 0);
-        compass.insert(Note::new(Pitch::G4, Metric::Quarter), 2);
-        compass.insert(Note::new(Pitch::E4, Metric::Quarter), 4);
-        compass.insert(Note::new(Pitch::C4, Metric::Quarter), 6);
-        song.push(compass);
+        let second_note = self.base_note.add_interval(&answer);
+        bar.insert(Note::new(second_note, Metric::Quarter), 2);
 
         song.play();
     }

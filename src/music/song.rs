@@ -4,7 +4,7 @@ use super::rhythm::{Tempo, TimeSignature};
 pub struct Song {
     tempo: Tempo,
     time_signature: TimeSignature,
-    compasses: Vec<Bar>,
+    bars: Vec<Bar>,
 }
 
 impl Song {
@@ -12,16 +12,21 @@ impl Song {
         Song {
             tempo,
             time_signature,
-            compasses: vec![],
+            bars: vec![],
         }
     }
 
-    pub fn push(&mut self, compass: Bar) {
-        self.compasses.push(compass);
+    pub fn push(&mut self, bar: Bar) {
+        self.bars.push(bar);
+    }
+
+    pub fn new_bar(&mut self) -> &mut Bar {
+        self.bars.push(Bar::new(self.time_signature.clone()));
+        self.bars.last_mut().unwrap()
     }
 
     pub fn play(&self) {
-        for compass in &self.compasses {
+        for compass in &self.bars {
             compass.play(&self.tempo);
         }
     }

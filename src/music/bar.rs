@@ -42,14 +42,11 @@ impl Bar {
         for (i, beat) in self.beats.iter().enumerate() {
             if let Some(note) = beat {
                 let delay = SMALLEST_METRIC.duration(&tempo).saturating_mul(i as u32);
-                println!("note delay {:?}", delay);
                 let note = note.as_sine(&tempo).delay(delay);
                 input.add(note);
             }
         }
         let _ = player.stream_handle.play_raw(output);
-        let bar_duration = self.time_signature.bar_duration(&tempo);
-        println!("coucou: {:?}", bar_duration);
-        std::thread::sleep(bar_duration);
+        std::thread::sleep(self.time_signature.bar_duration(&tempo));
     }
 }
