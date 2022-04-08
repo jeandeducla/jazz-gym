@@ -66,35 +66,15 @@ impl Game {
         }
     }
 
-    pub fn get_current_score(&self) -> Score {
-        Score {
-            correct_answers: self
-                .challenges
-                .borrow()
-                .iter()
-                .filter(|c| c.user_answer.is_some())
-                .fold(
-                    0,
-                    |acc, c| {
-                        if c.verify_user_answer() {
-                            acc + 1
-                        } else {
-                            acc
-                        }
-                    },
-                ),
-            total_answers: self.challenges.borrow().len(),
-        }
-    }
-
     fn available_commands_menu(&self) {
         self.intervals
             .iter()
             .enumerate()
-            .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
-            .for_each(|s| println!("{}", s));
+            .map(|(idx, s)| format!("{:>2}> {}", idx + 1, s))
+            .for_each(|s| println!("| {:<10}{}", "", s));
+        let replay = format!("{}> {:?}", Command::Replay.to_string(), Command::Replay);
         println!("| ");
-        println!("|         r> Replay");
+        println!("| {:<10} {}", "", replay);
         println!("| ");
     }
 
@@ -103,14 +83,13 @@ impl Game {
         println!("| ");
         println!("| {}", self);
 
-        let mut score = repeat('-')
-            .take(self.challenges.borrow().len())
-            .collect::<Vec<char>>();
+        let mut score = Score::new(self.challenges.borrow().len());
 
         for (idx, challenge) in self.challenges.borrow_mut().iter_mut().enumerate() {
             println!("| ");
             println!("| [{}] Listen...What interval is it? ", idx + 1);
             println!("| ");
+
             challenge.play_correct_answer();
             self.available_commands_menu();
 
@@ -143,13 +122,9 @@ impl Game {
                                     }
                                 }
 
-                                if let Some(s) = score.get_mut(idx) {
-                                    *s = match challenge.verify_user_answer() {
-                                        true => '*',
-                                        false => '_',
-                                    };
-                                };
-                                println!("| [{}]", score.iter().collect::<String>());
+                                score.update(idx, challenge.verify_user_answer());
+                                println!("|");
+                                println!("| {}", score);
 
                                 break;
                             };
@@ -162,10 +137,10 @@ impl Game {
             }
         }
 
+        let (correct_answers, total_answered) = score.compute();
         println!("| ");
         println!("| Game Over");
-        println!("| Your score is: {}", self.get_current_score());
-        println!();
+        println!("| Your score is: {} / {}", correct_answers, total_answered);
 
         Ok(())
     }
@@ -173,25 +148,30 @@ impl Game {
 
 impl Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut s = format!("{:>10}Game\n", "".to_string());
+
         let intervals = self
             .intervals
             .iter()
             .map(|i| i.to_string())
             .collect::<Vec<String>>()
             .join(", ");
-
-        let s =
-            format!(
-            "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
-            repeat("-").take(self.challenges.borrow().len()).collect::<String>(),
+        s.push_str(&format!(
+            "|>   challenges: [{}] ({})\n",
+            repeat("-")
+                .take(self.challenges.borrow().len())
+                .collect::<String>(),
             self.challenges.borrow().len(),
-            self.base_note.to_string(),
-            intervals,
-        );
+        ));
+
+        s.push_str(&format!("|>   base note: {}\n", self.base_note.to_string()));
+        s.push_str(&format!("|>   intervals: {}", intervals));
+
         write!(f, "{}", s)
     }
 }
 
+#[derive(Debug)]
 pub enum Command {
     Replay,
 }
@@ -203,6 +183,14 @@ impl FromStr for Command {
         match s {
             "r" => Ok(Command::Replay),
             _ => Err(()),
+        }
+    }
+}
+
+impl ToString for Command {
+    fn to_string(&self) -> String {
+        match self {
+            Command::Replay => "r".to_string(),
         }
     }
 }

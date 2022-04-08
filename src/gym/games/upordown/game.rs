@@ -42,27 +42,6 @@ impl Game {
         }
     }
 
-    pub fn get_current_score(&self) -> Score {
-        Score {
-            correct_answers: self
-                .challenges
-                .borrow()
-                .iter()
-                .filter(|c| c.user_answer.is_some())
-                .fold(
-                    0,
-                    |acc, c| {
-                        if c.verify_user_answer() {
-                            acc + 1
-                        } else {
-                            acc
-                        }
-                    },
-                ),
-            total_answers: self.challenges.borrow().len(),
-        }
-    }
-
     fn available_commands_menu(&self) {
         let up = format!("{}> {:?}", Command::Up.to_string(), Command::Up);
         let down = format!("{}> {:?}", Command::Down.to_string(), Command::Down);
@@ -79,9 +58,7 @@ impl Game {
         println!("| ");
         println!("| {}", self);
 
-        let mut score = repeat('-')
-            .take(self.challenges.borrow().len())
-            .collect::<Vec<char>>();
+        let mut score = Score::new(self.challenges.borrow().len());
 
         for (idx, challenge) in self.challenges.borrow_mut().iter_mut().enumerate() {
             println!("| ");
@@ -133,13 +110,9 @@ impl Game {
                                     }
                                 }
 
-                                if let Some(s) = score.get_mut(idx) {
-                                    *s = match challenge.verify_user_answer() {
-                                        true => '*',
-                                        false => '_',
-                                    };
-                                };
-                                println!("| [{}]", score.iter().collect::<String>());
+                                score.update(idx, challenge.verify_user_answer());
+                                println!("|");
+                                println!("| {}", score);
 
                                 break;
                             }
@@ -152,9 +125,10 @@ impl Game {
             }
         }
 
+        let (correct_answers, total_answered) = score.compute();
         println!("| ");
         println!("| Game Over");
-        println!("| Your score is: {}", self.get_current_score());
+        println!("| Your score is: {} / {}", correct_answers, total_answered);
         println!();
 
         Ok(())
@@ -163,13 +137,14 @@ impl Game {
 
 impl Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let s = format!(
-            "          Game\n|>   challenges: [{}] ({})",
+        let mut s = format!("{:>10}Game\n", "".to_string());
+        s.push_str(&format!(
+            "|>   challenges: [{}] ({})",
             repeat("-")
                 .take(self.challenges.borrow().len())
                 .collect::<String>(),
             self.challenges.borrow().len(),
-        );
+        ));
         write!(f, "{}", s)
     }
 }
