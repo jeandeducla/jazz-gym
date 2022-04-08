@@ -1,4 +1,3 @@
-mod challenge;
 mod games;
 mod score;
 mod session;

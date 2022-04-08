@@ -63,7 +63,7 @@ impl Game {
         for (idx, challenge) in self.challenges.borrow_mut().iter_mut().enumerate() {
             println!("| ");
             println!(
-                "| [{}] Listen...is the second note higher or lower? ",
+                "| [{}] Listen...Is the second note higher or lower? ",
                 idx + 1
             );
             println!("| ");
