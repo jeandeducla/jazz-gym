@@ -3,7 +3,7 @@ use super::intervals::Interval;
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Pitch {
     C4,
     Db4,

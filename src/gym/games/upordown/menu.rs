@@ -2,21 +2,23 @@ use rustyline::{error::ReadlineError, Editor};
 use std::fmt::{self, Display};
 use std::str::FromStr;
 
-use crate::gym::games::chordguesser;
-use crate::gym::games::upordown;
+use super::game::Game;
+use super::parameters::Parameters;
 
 pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
     menu();
+    let mut parameters = Parameters::new();
     loop {
         match editor.readline(">> ") {
             Ok(line) => match Command::from_str(&line) {
                 Ok(cmd) => match cmd {
-                    Command::ChordGuesser => {
-                        let _ = chordguesser::navigate(editor);
+                    Command::Start => {
+                        let mut game = Game::new(parameters.num_challenges);
+                        let _ = game.navigate(editor);
                         menu();
                     }
-                    Command::UpOrDown => {
-                        let _ = upordown::navigate(editor);
+                    Command::Parameters => {
+                        parameters.navigate(editor);
                         menu();
                     }
                     Command::Back => {
@@ -36,8 +38,8 @@ pub fn navigate(editor: &mut Editor<()>) -> Result<(), ReadlineError> {
 }
 
 enum Command {
-    ChordGuesser,
-    UpOrDown,
+    Start,
+    Parameters,
     Back,
 }
 
@@ -47,8 +49,8 @@ impl FromStr for Command {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
             "0" => Ok(Command::Back),
-            "1" => Ok(Command::ChordGuesser),
-            "2" => Ok(Command::UpOrDown),
+            "1" => Ok(Command::Start),
+            "2" => Ok(Command::Parameters),
             _ => Err(()),
         }
     }
@@ -58,8 +60,8 @@ impl Display for Command {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
             Command::Back => "back",
-            Command::ChordGuesser => "chord guesser",
-            Command::UpOrDown => "up or down",
+            Command::Start => "start",
+            Command::Parameters => "parameters",
         };
         write!(f, "{}", s)
     }
@@ -67,10 +69,10 @@ impl Display for Command {
 
 fn menu() {
     println!();
-    println!(" Games");
+    println!(" Up or Down");
     println!();
-    println!("  [1]> {} ", Command::ChordGuesser);
-    println!("  [2]> {} ", Command::UpOrDown);
+    println!("  [1]> {} ", Command::Start);
+    println!("  [2]> {} ", Command::Parameters);
     println!();
     println!("  [0]< {} ", Command::Back);
     println!();

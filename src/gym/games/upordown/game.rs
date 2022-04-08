@@ -1,7 +1,6 @@
 use super::challenge::Challenge;
 
 use crate::gym::score::Score;
-use crate::music::intervals::Interval;
 use crate::music::pitches::Pitch;
 
 use rand::Rng;
@@ -17,52 +16,29 @@ pub const MAX_CHALLENGE_NUM: usize = 20;
 #[derive(Debug)]
 pub struct Game {
     pub challenges: RefCell<Vec<Challenge>>,
-    base_note: Pitch,
-    intervals: Vec<Interval>,
 }
 
 impl Game {
-    pub fn new(
-        challenge_num: usize,
-        base_note: Option<Pitch>,
-        intervals: Option<Vec<Interval>>,
-    ) -> Self {
+    pub fn new(challenge_num: usize) -> Self {
         let challenge_num = if challenge_num == 0 {
             DEFAULT_CHALLENGE_NUM
         } else {
             challenge_num
         };
 
-        let intervals = match intervals {
-            Some(mut intervals) => {
-                intervals.sort();
-                intervals
-            }
-            None => (0..13)
-                .into_iter()
-                .map(|i| Interval::from(i))
-                .collect::<Vec<Interval>>(),
-        };
-
-        let base_note: Pitch = match base_note {
-            Some(base_note) => base_note,
-            None => rand::thread_rng().gen_range(0, 13).into(),
-        };
-
         Game {
             challenges: RefCell::new(
                 (0..challenge_num)
                     .map(|_| {
-                        let correct_answer = {
-                            let idx = rand::thread_rng().gen_range(0, intervals.len());
-                            intervals.get(idx).unwrap()
-                        };
-                        Challenge::new(base_note.clone(), correct_answer.clone())
+                        let first_note: Pitch = rand::thread_rng().gen_range(0, 13).into();
+                        let mut second_note: Pitch = rand::thread_rng().gen_range(0, 13).into();
+                        while second_note == first_note {
+                            second_note = rand::thread_rng().gen_range(0, 13).into();
+                        }
+                        Challenge::new(first_note, second_note)
                     })
                     .collect(),
             ),
-            base_note,
-            intervals,
         }
     }
 
@@ -88,13 +64,13 @@ impl Game {
     }
 
     fn available_commands_menu(&self) {
-        self.intervals
-            .iter()
-            .enumerate()
-            .map(|(idx, s)| format!("{:<10}", format!("|         {:>2}> {}", idx + 1, s)))
-            .for_each(|s| println!("{}", s));
+        let up = format!("{}> {:?}", Command::Up.to_string(), Command::Up);
+        let down = format!("{}> {:?}", Command::Down.to_string(), Command::Down);
+        let replay = format!("{}> {:?}", Command::Replay.to_string(), Command::Replay);
+        println!("| {:<10}{}", "", up);
+        println!("| {:<10}{}", "", down);
         println!("| ");
-        println!("|         r> Replay");
+        println!("| {:<10}{}", "", replay);
         println!("| ");
     }
 
@@ -109,7 +85,10 @@ impl Game {
 
         for (idx, challenge) in self.challenges.borrow_mut().iter_mut().enumerate() {
             println!("| ");
-            println!("| [{}] Listen...What interval is it? ", idx + 1);
+            println!(
+                "| [{}] Listen...is the second note higher or lower? ",
+                idx + 1
+            );
             println!("| ");
             challenge.play_correct_answer();
             self.available_commands_menu();
@@ -119,16 +98,24 @@ impl Game {
 
                 match readline {
                     Ok(input) => {
-                        if let Ok(_) = Command::from_str(&input) {
-                            challenge.play_correct_answer();
-                        } else if let Ok(num) = u8::from_str(&input) {
-                            if let Some(interval) = self.intervals.get((num - 1) as usize) {
-                                challenge.answer(interval.clone());
+                        if let Ok(cmd) = Command::from_str(&input) {
+                            if let Command::Replay = cmd {
+                                challenge.play_correct_answer();
+                            } else {
+                                let answer = match cmd {
+                                    Command::Up => true,
+                                    Command::Down => false,
+                                    _ => unreachable!(),
+                                };
+                                challenge.answer(answer);
 
                                 println!("|");
                                 println!(
                                     "|    Your answer, '{}',  was...",
-                                    challenge.user_answer.as_ref().unwrap()
+                                    match challenge.user_answer.as_ref().unwrap() {
+                                        true => "higher",
+                                        false => "lower",
+                                    }
                                 );
                                 match challenge.verify_user_answer() {
                                     true => {
@@ -138,7 +125,10 @@ impl Game {
                                         println!("|         x Uncorrect...");
                                         println!(
                                             "|    The correct answer was {}",
-                                            challenge.correct_answer
+                                            match challenge.correct_answer {
+                                                true => "higher",
+                                                false => "lower",
+                                            }
                                         );
                                     }
                                 }
@@ -152,7 +142,7 @@ impl Game {
                                 println!("| [{}]", score.iter().collect::<String>());
 
                                 break;
-                            };
+                            }
                         }
                     }
                     Err(_) => {
@@ -173,27 +163,22 @@ impl Game {
 
 impl Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let intervals = self
-            .intervals
-            .iter()
-            .map(|i| i.to_string())
-            .collect::<Vec<String>>()
-            .join(", ");
-
-        let s =
-            format!(
-            "          Game\n|>   challenges: [{}] ({})\n|>   base_note: {}\n|>   intervals: {}",
-            repeat("-").take(self.challenges.borrow().len()).collect::<String>(),
+        let s = format!(
+            "          Game\n|>   challenges: [{}] ({})",
+            repeat("-")
+                .take(self.challenges.borrow().len())
+                .collect::<String>(),
             self.challenges.borrow().len(),
-            self.base_note.to_string(),
-            intervals,
         );
         write!(f, "{}", s)
     }
 }
 
+#[derive(Debug)]
 pub enum Command {
     Replay,
+    Up,
+    Down,
 }
 
 impl FromStr for Command {
@@ -202,7 +187,19 @@ impl FromStr for Command {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
             "r" => Ok(Command::Replay),
+            "1" => Ok(Command::Up),
+            "2" => Ok(Command::Down),
             _ => Err(()),
+        }
+    }
+}
+
+impl ToString for Command {
+    fn to_string(&self) -> String {
+        match self {
+            Command::Replay => "r".to_string(),
+            Command::Up => "1".to_string(),
+            Command::Down => "2".to_string(),
         }
     }
 }
